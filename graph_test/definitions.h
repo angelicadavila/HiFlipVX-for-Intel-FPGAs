@@ -49,6 +49,11 @@ const vx_uint8 FILTER_SIZE = 3;
 #define EXTRACT_CHANNELU 1  
 #define EXTRACT_CHANNELV 2  
 
+//RGB
+#define VX_CHANNEL_R 0  
+#define VX_CHANNEL_G 1  
+#define VX_CHANNEL_B 2  
+
 #define COMB_CHANNEL 3  
 
 

@@ -71,17 +71,37 @@ void ImgNot(vx_image<DataType, VEC_SIZE, stream_type0> &input1 , vx_image<DataTy
 @param input2          Input image
 @param output          Output image
 */
-template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, int stream_type0= vx_stream_e, int stream_type1= vx_stream_e, int stream_type2= vx_stream_e>
-#ifdef Xilinx 
-void ImgAnd(vx_image<DataType, VEC_SIZE> input1[IMG_PIXEL / VEC_SIZE], vx_image<DataType, VEC_SIZE> input2[IMG_PIXEL / VEC_SIZE], vx_image<DataType, VEC_SIZE> output[IMG_PIXEL / VEC_SIZE]) {
-#elif Intel
-void ImgAnd(vx_image<DataType, VEC_SIZE, stream_type0> &input1 , vx_image<DataType, VEC_SIZE, stream_type1> &input2, vx_image<DataType, VEC_SIZE, stream_type2> &output) {
-#endif
- #ifdef Xilinx 
-#pragma HLS INLINE 
- #endif  
+template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL,
+	typename vx_type0, typename vx_type1, typename vx_type2, 
+	vx_type0 &input0, vx_type1 &input1, vx_type2 &output,
+	int stream_type0= vx_stream_e, int stream_type1= vx_stream_e, int stream_type2= vx_stream_e>
+void ImgAndIntel()
+{
 	PixelwiseSameType<DataType, VEC_SIZE, IMG_PIXEL, HIFLIPVX::BITWISE_AND, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, 0>(input1, input2, output);
 }
+//cass wrap
+template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL,
+	typename vx_type0, typename vx_type1, typename vx_type2, 
+	vx_type0 &input0, vx_type1 &input1, vx_type2 &output,
+	int stream_type0= vx_stream_e, int stream_type1= vx_stream_e, int stream_type2= vx_stream_e>
+struct vxAnd(){ 
+	vxAnd(){
+#ifdef Xilinx 
+#pragma HLS INLINE 
+	PixelwiseSameType<DataType, VEC_SIZE, IMG_PIXEL, HIFLIPVX::BITWISE_AND, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, 0>(input1, input2, output);
+#elif Intel
+	ihc::launch((ImgAndIntel<DataType, VEC_SIZE, IMG_PIXEL, decltype(input0),
+		decltype(input1), decltype(output), input0, input1, output>));
+#endif
+	}
+     void vxReleaseNode(){
+#ifdef Xilinx
+#elif __INTELFPGA_COMPILER__
+	ihc::collect((ImgAndIntel<DataType, VEC_SIZE, IMG_PIXEL, decltype(input0),
+		decltype(input1), decltype(output), input0, input1, output>));
+#endif
+	}
+};
 
 /** @brief Performs a bitwise INCLUSIVE OR operation between two images. The output image dimensions should be the same as the dimensions of the input images.
 @param DataType      Data type of the image pixels
@@ -215,17 +235,34 @@ void ImgAdd(vx_image<DataType, VEC_SIZE, stream_type0> &input1 , vx_image<DataTy
 @param input2          Input image
 @param output          Output image
 */
-template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, vx_convert_policy_e CONV_POLICY, int stream_type0= vx_stream_e, int stream_type1= vx_stream_e, int stream_type2= vx_stream_e>
-#ifdef Xilinx 
-void ImgSubtract(vx_image<DataType, VEC_SIZE> input1[IMG_PIXEL / VEC_SIZE], vx_image<DataType, VEC_SIZE> input2[IMG_PIXEL / VEC_SIZE], vx_image<DataType, VEC_SIZE> output[IMG_PIXEL / VEC_SIZE]) {
-#elif Intel
-void ImgSubtract(vx_image<DataType, VEC_SIZE, stream_type0> &input1 , vx_image<DataType, VEC_SIZE> &input2, vx_image<DataType, VEC_SIZE, stream_type2> &output) {
-#endif
- #ifdef Xilinx 
-#pragma HLS INLINE 
- #endif  
+
+/*@brief wrapper function for Intel FPGAs. stream arguments are valid only in template.
+*/
+template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, vx_convert_policy_e CONV_POLICY, typename vx_type0, typename vx_type1, vx_type0 &input1, vx_type0 &input2, vx_type1 &output>
+void ImgSubtractIntel () {
 	PixelwiseSameType<DataType, VEC_SIZE, IMG_PIXEL, HIFLIPVX::ARITHMETIC_SUBTRACTION, CONV_POLICY, VX_ROUND_POLICY_TO_ZERO, 0>(input1, input2, output);
 }
+
+template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, 
+	vx_convert_policy_e CONV_POLICY, typename vx_type0, typename vx_type1, 
+	vx_type0 &input1, vx_type0 &input2, vx_type1 &output,
+	int stream_type0= vx_stream_e, int stream_type1= vx_stream_e>
+struct vxSubtract{
+	vxSubtract(){
+		#ifdef Xilinx 
+		#pragma HLS INLINE 
+		PixelwiseSameType<DataType, VEC_SIZE, IMG_PIXEL, HIFLIPVX::ARITHMETIC_SUBTRACTION, CONV_POLICY, VX_ROUND_POLICY_TO_ZERO, 0>(input1, input2, output);
+		#elif Intel
+		ihc::launch (( ImgSubtractIntel<DataType, VEC_SIZE, IMG_PIXEL, CONV_POLICY, decltype(input1), decltype(output), input1, input2, output >)); 
+		#endif
+	}
+	void vxReleaseNode(){ 
+		 #ifdef Xilinx 
+		 #elif Intel
+		ihc::collect (( ImgSubtractIntel<DataType, VEC_SIZE, IMG_PIXEL, CONV_POLICY, decltype(input1), decltype(output), input1, input2, output >)); 
+		 #endif  
+	}
+};
 
 /** @brief Implements the Gradient Magnitude Computation Kernel. The output image dimensions should be the same as the dimensions of the input images.
 @param DataType      Data type of the image pixels

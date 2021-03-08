@@ -2,7 +2,7 @@
 #define SRC_IMG_FILTER_BASE_INTEL_H_
 #include "img_filter_core.h"
 #include "link_OpenCLIntel.h"
-#include "HLS/task.h" //system of task
+//#include "HLS/task.h" //system of task
 
 //Intel wrapper to call the function as a task, Intel require: The streammings only can pass to a funtion through argument template
 //are an invalid implementation

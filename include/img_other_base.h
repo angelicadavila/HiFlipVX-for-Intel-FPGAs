@@ -577,4 +577,47 @@ struct ImgTableLookup{
 	}
 };
 
+
+/** @brief  Implements the Thresholding functions. The output image
+ * dimensions should be the same as the dimensions of the input image.
+*   @details This kernel produce a boolean image
+* @param DataType   The data type can be vx_uint8 and vx_int16
+* @param vx_threshold  The amount of pixels for input and output image
+* @param input       The input image (vx_uint8, vx_int16)
+* @param output      The output image (vx_uint8, vx_int16)
+*/
+
+template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
+	typename vx_type0, typename vx_type1,
+	vx_type0 &input, vx_type1 &output,
+	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+void ImgThresholdIntel() {
+	ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
+}
+
+template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
+	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
+	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+struct vxThresholdNode{
+	vxThresholdNode(){
+ #ifdef Xilinx 
+	#pragma HLS INLINE 
+		ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
+ #elif Intel
+		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
+		 vx_type0, vx_type1, input, output>));
+ #endif
+	}
+  void vxReleaseNode(){
+ #ifdef 
+ #elif Intel
+		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
+		 vx_type0, vx_type1, input, output>));
+ #endif
+  }
+};
+
+
+
+
 #endif /* SRC_IMG_OTHER_BASE_H_ */
