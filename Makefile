@@ -20,8 +20,8 @@
 
 MANUFACTURER :=Intel
 #uncomment for stratix 10 GX - default
-#FPGA_FAMILY :=Stratix10 
-FPGA_FAMILY := 1sm21bhu2f53e2vgs1
+FPGA_FAMILY :=Stratix10 
+#FPGA_FAMILY := 1sm21bhu2f53e2vgs1
 
 #Read the board BSP configuration based on enviroment variable of custom  FPGAs
 #All is based on Intel OpenCL FPGA installation
@@ -164,5 +164,28 @@ autoc8-fpga: 	$(SOURCE_FILES)
 autoc8-test-x86-64: CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) $(INC) $(HLS_CXX_FLAGS) -march=x86-64 -o test-x86-64 
 autoc8-test-x86-64:SOURCE_FILES := $(SOURCE_FILES) ./graph_test/autoc8.cpp 
 autoc8-test-x86-64: $(SOURCE_FILES)
+	     $(ECHO)$ $(CXX) $(SOURCE_FILES) $(CXXFLAGS)
+
+
+
+
+###########################################################################
+###########################################################################
+.PHONY:skinTone-fpga
+skinTone-fpga: CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) $(INC) -march=$(FPGA_FAMILY) --simulator none -v -o HiFlipVX_Intel
+skinTone-fpga:  SOURCE_FILES := $(SOURCE_FILES) ./graph_test/skinTone.cpp 
+skinTone-fpga: 	$(SOURCE_FILES)
+	$(CXX) $(SOURCE_FILES) $(CXXFLAGS) 
+	@echo "-----------------------------------------------"	
+	@echo "------------COMPILING HIFLIPVX-----------------"
+	@echo "-------------for Intel FPGAS  -----------------"
+	@echo "---------------- UZ - TUD ---------------------"
+	@echo "---------- Skyn Tone Detection ----------------"
+	@echo "-----------------------------------------------"	
+
+.PHONY: skinTone-test-x86-64
+skinTone-test-x86-64: CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) $(INC) $(HLS_CXX_FLAGS) -march=x86-64 -o test-x86-64 
+skinTone-test-x86-64:SOURCE_FILES := $(SOURCE_FILES) ./graph_test/skinTone.cpp 
+skinTone-test-x86-64: $(SOURCE_FILES)
 	     $(ECHO)$ $(CXX) $(SOURCE_FILES) $(CXXFLAGS)
 
