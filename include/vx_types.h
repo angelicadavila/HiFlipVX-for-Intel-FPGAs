@@ -167,6 +167,7 @@ enum vx_type_e {
 	VX_TYPE_SIZE = 0x00D,/*!< \brief A <tt>\ref vx_size</tt>. */
 	VX_TYPE_DF_IMAGE = 0x00E,/*!< \brief A <tt>\ref vx_df_image</tt>. */
 	VX_TYPE_BOOL = 0x010,/*!< \brief A <tt>\ref vx_bool</tt>. */
+	VX_TYPE_THRESHOLD       = 0x80A,/*!< \brief A <tt>\ref vx_threshold</tt>. */
 };
 
 /*********************************************************************************************************************/

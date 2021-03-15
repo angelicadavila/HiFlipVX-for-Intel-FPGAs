@@ -1942,20 +1942,20 @@ VX_TYPE_INT16);
 * @param input       The input image (vx_uint8, vx_int16)
 * @param output      The output image (vx_uint8, vx_int16)
 */
-template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
-	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
-	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
-void ImgThreshold(){
-
-	const vx_uint32 INPUT_SIZE = sizeof(SrcType);
-
-	// Variables
-	vx_uint8 cases = 0;
-	SrcType input_data = 0;
-	vx_uint8 internal_data[INPUT_SIZE];
-
-
-}
+//template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
+//	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
+//	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+//void ImgThreshold(){
+//
+//	const vx_uint32 INPUT_SIZE = sizeof(SrcType);
+//
+//	// Variables
+//	vx_uint8 cases = 0;
+//	SrcType input_data = 0;
+//	vx_uint8 internal_data[INPUT_SIZE];
+//
+//
+//}
 
 #endif /* SRC_IMG_OTHER_CORE_H_ */
 

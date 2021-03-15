@@ -54,6 +54,7 @@
 #include <type_traits>
 #endif
 
+#include "vx_internal.h"
 
 
 /******************************************************************************/
@@ -159,6 +160,13 @@ using vx_distribution= typename conditional<stream_type == vx_streamIn_e,
         #define UNROLL_XILINX()
 		#define SIDE_FIFO_CAPACITY 32
 #endif
+
+
+/*! \brief OpenVX defines Threshold objects for threshold to update images in
+ * 			a bynary format 
+*/		   
+template<typename T>
+using vx_threshold = _vx_threshold<T>; 
 
 /*! \brief Creates an image object
 @param  ImageType The output image type (use "struct vx_image<...>" for vectorization of 2, 4 and 8)

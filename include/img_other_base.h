@@ -586,36 +586,36 @@ struct ImgTableLookup{
 * @param input       The input image (vx_uint8, vx_int16)
 * @param output      The output image (vx_uint8, vx_int16)
 */
-
-template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
-	typename vx_type0, typename vx_type1,
-	vx_type0 &input, vx_type1 &output,
-	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
-void ImgThresholdIntel() {
-	ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
-}
-
-template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
-	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
-	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
-struct vxThresholdNode{
-	vxThresholdNode(){
- #ifdef Xilinx 
-	#pragma HLS INLINE 
-		ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
- #elif Intel
-		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
-		 vx_type0, vx_type1, input, output>));
- #endif
-	}
-  void vxReleaseNode(){
- #ifdef 
- #elif Intel
-		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
-		 vx_type0, vx_type1, input, output>));
- #endif
-  }
-};
+//
+//template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
+//	typename vx_type0, typename vx_type1,
+//	vx_type0 &input, vx_type1 &output,
+//	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+//void ImgThresholdIntel() {
+//	ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
+//}
+//
+//template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
+//	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
+//	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+//struct vxThresholdNode{
+//	vxThresholdNode(){
+// #ifdef Xilinx 
+//	#pragma HLS INLINE 
+//		ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
+// #elif Intel
+//		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
+//		 vx_type0, vx_type1, input, output>));
+// #endif
+//	}
+//  void vxReleaseNode(){
+// #ifdef 
+// #elif Intel
+//		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
+//		 vx_type0, vx_type1, input, output>));
+// #endif
+//  }
+//};
 
 
 
