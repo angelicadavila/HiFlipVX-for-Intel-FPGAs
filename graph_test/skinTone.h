@@ -4,6 +4,7 @@
 #include "img_filter_base_intel.h" 
 #include "img_pixelop_base.h" 
 #include "img_other_base.h" 
+//#include "vx_threshold.c"
 //#include "img_filter_base.h" 
 #define WIDTH_MEM 256 
 
@@ -42,9 +43,10 @@ ihc::stream<vx_uint8 > streamRmB_3;  //R-B
 //
 
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
-	vx_uint16 HEIGHT, vx_uint8 KERN_SIZE, vx_border_e BORDER_TYPE	>
+	vx_uint16 HEIGHT>
 void skinTone( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg)
 {
+
 	//Is it doing prefetching? buff->trying to improve the buffer.
 	vxDramRead <vx_uint32, decltype(stream_r_0), stream_r_0, DramTypeIn0, 1, 
 		WIDTH, HEIGHT,16> vxCopyDRAM_In0 (&InputImg);
@@ -81,8 +83,27 @@ void skinTone( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg)
 	vxSubtract<vx_uint8, VEC_INT, PIXELS_FHD, VX_CONVERT_POLICY_SATURATE,
 		decltype(streamRCC1_2), decltype(streamRmB_3), streamRCC1_2, streamBCC0_2, 
 		streamRmB_3> vxSubtractNode1;
+	
 	//apply threshold
+  	vx_uint8 thresValue95 = 95;
+	vx_threshold<vx_uint8> thresh95;
+	thresh95.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+    thresh95.vxSetThresholdAttribute(VX_THRESHOLD_THRESHOLD_VALUE, thresValue95, sizeof(vx_uint8));
+	
+  	vx_uint8 thresValue40 = 40;
+	vx_threshold<vx_uint8> thresh40;
+	thresh40.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+    thresh95.vxSetThresholdAttribute(VX_THRESHOLD_THRESHOLD_VALUE, thresValue40, sizeof(vx_uint8));
 
+  	vx_uint8 thresValue20 = 20;
+	vx_threshold<vx_uint8> thresh20;
+	thresh20.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+    thresh20.vxSetThresholdAttribute(VX_THRESHOLD_THRESHOLD_VALUE, thresValue20, sizeof(vx_uint8));
+	
+  	vx_uint8 thresValue15 = 15;
+	vx_threshold<vx_uint8> thresh15;
+	thresh15.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+    thresh15.vxSetThresholdAttribute(VX_THRESHOLD_THRESHOLD_VALUE, thresValue15, sizeof(vx_uint8));
 //	vxDramWrite <DstType, decltype(streamX_1_2), streamX_1_2, DramTypeOut0, 
 //		VEC_NUM, WIDTH, HEIGHT,32> vxCopyDRAM_Out0 (&OutputImg);
 //

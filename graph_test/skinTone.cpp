@@ -54,8 +54,29 @@ int main(){
 		tmp_in[i]=data;
 	}
 
+	//set all the constant values
+//	const vx_uint8 thresValue95 = 95;
+//    vx_threshold<vx_uint8> thresh95 = vxCreateThreshold<vx_uint8>(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+//	vxSetThresholdAttribute<vx_uint8>(thresh95, VX_THRESHOLD_THRESHOLD_VALUE, &thresValue95, sizeof(vx_uint8));
+//
+//	vx_uint8 thresValue40 = 40;
+//	vx_threshold<vx_uint8> thresh40 = vxCreateThreshold<vx_uint8>(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+//	vxSetThresholdAttribute<vx_uint8>(thresh40, VX_THRESHOLD_THRESHOLD_VALUE, &thresValue40, sizeof(vx_uint8));
+//
+//	vx_uint8 thresValue20 = 20;
+//	vx_threshold<vx_uint8> thresh20 = vxCreateThreshold<vx_uint8>(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+//	vxSetThresholdAttribute<vx_uint8>(thresh20, VX_THRESHOLD_THRESHOLD_VALUE, &thresValue20, sizeof(vx_uint8));
+//
+//	vx_uint8 thresValue15 = 15;
+//	vx_threshold<vx_uint8> thresh15 = vxCreateThreshold<vx_uint8>(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+//	vxSetThresholdAttribute<vx_uint8>(thresh15, VX_THRESHOLD_THRESHOLD_VALUE, &thresValue15, sizeof(vx_uint8));
+//
+//	vx_uint8 thresValue0 = 0;
+//	vx_threshold<vx_uint8> thresh0 = vxCreateThreshold<vx_uint8>(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+//	vxSetThresholdAttribute<vx_uint8>(thresh0, VX_THRESHOLD_THRESHOLD_VALUE, &thresValue0, sizeof(vx_uint8));
+
 	//calling the component
-	skinTone<filter_u_type, filter_s_type, VEC_NUM , COLS_FHD , ROWS_FHD , FILTER_SIZE , SOBEL_BORDER>(mm_in, mm_out);
+	skinTone<filter_u_type, filter_s_type, VEC_NUM , COLS_FHD , ROWS_FHD>(mm_in, mm_out);
 
 	unsigned int* out_img = (unsigned int*) malloc(rows * cols * sizeof(unsigned int));
 	vx_image<filter_s_type,VEC_NUM> data_out;
