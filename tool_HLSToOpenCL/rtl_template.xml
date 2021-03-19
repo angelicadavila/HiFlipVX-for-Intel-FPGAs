@@ -54,8 +54,8 @@
       <MEM_INPUT port="InputImg" access="readwrite"/>
       <MEM_INPUT port="OutputImg" access="readwrite"/>
 
-      <AVALON_MEM port="avmm_1_rw" width="256" burstwidth="5" optype="read" buffer_location="" />
-      <AVALON_MEM port="avmm_2_rw" width="256" burstwidth="5" optype="write" buffer_location="" />
+      <AVALON_MEM port="avmm_1_rw" width="512" burstwidth="5" optype="read" buffer_location="" />
+      <AVALON_MEM port="avmm_2_rw" width="512" burstwidth="5" optype="write" buffer_location="" />
 
     </INTERFACE>
     <C_MODEL>

@@ -571,7 +571,7 @@ struct ImgTableLookup{
 	void vxReleaseNode(){
  #ifdef Xilinx 
  #elif Intel
-	ihc::launch((ImgTableLookupIntel<DataType, IMG_PIXELS, LUT_COUNT,
+	ihc::collect((ImgTableLookupIntel<DataType, IMG_PIXELS, LUT_COUNT,
 		LUT_OFFSET,vx_type0, vx_luttype, vx_type1, input, lut, output>));
  #endif  
 	}
@@ -586,38 +586,55 @@ struct ImgTableLookup{
 * @param input       The input image (vx_uint8, vx_int16)
 * @param output      The output image (vx_uint8, vx_int16)
 */
-//
-//template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
-//	typename vx_type0, typename vx_type1,
-//	vx_type0 &input, vx_type1 &output,
-//	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
-//void ImgThresholdIntel() {
-//	ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
-//}
-//
-//template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
-//	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
-//	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
-//struct vxThresholdNode{
-//	vxThresholdNode(){
-// #ifdef Xilinx 
-//	#pragma HLS INLINE 
-//		ImgThreshold<DstType,THRESHOLD, IMG_PIXELS>(input, output);
-// #elif Intel
-//		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
-//		 vx_type0, vx_type1, input, output>));
-// #endif
-//	}
-//  void vxReleaseNode(){
-// #ifdef 
-// #elif Intel
-//		ihc::launch((ImgThresholdIntel<DstType, THRESHOLD, IMG_PIXELS, 
-//		 vx_type0, vx_type1, input, output>));
-// #endif
-//  }
-//};
+template<typename DstType, vx_uint32 IMG_PIXELS,vx_uint8 VEC_SIZE, 
+ 	vx_enum type, DstType value, DstType lower, DstType upper, DstType true_value,
+	DstType false_value,
+	typename vx_type0, typename vx_type1,
+	vx_type0 &input, vx_type1 &output,
+	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+void ImgThresholdIntel() {
+	ImgThreshold<DstType, IMG_PIXELS, VEC_SIZE, type, value, lower,
+		 upper, true_value, false_value >(input, output);
+}
 
-
+template<typename DstType,  vx_uint32 IMG_PIXELS,vx_uint8 VEC_SIZE, 
+    typename vx_thresh,
+	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
+	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+struct vxThresholdNode{
+	vx_thresh* _thresh;
+	vxThresholdNode(vx_thresh thresh){
+		_thresh = &thresh;
+   		const vx_enum type     =  thresh.thresh_type; 	
+   		const DstType value =  thresh.value; 	
+   		const DstType lower =  thresh.lower;	
+   		const DstType upper =  thresh.upper; 	
+   		const DstType true_value =  thresh.true_value; 	
+   		const DstType false_value =  thresh.false_value; 	
+ #ifdef Xilinx 
+	#pragma HLS INLINE 
+		ImgThreshold<DstType, IMG_PIXELS>(input, output);
+ #elif Intel
+		ihc::launch((ImgThresholdIntel<DstType, IMG_PIXELS, VEC_SIZE, type, 
+		value, lower, upper, true_value, false_value,
+		 vx_type0, vx_type1, input, output>));
+ #endif
+	}
+  void vxReleaseNode(){
+ #ifdef Xilinx 
+ #elif Intel
+   	//	const vx_enum type     =  _thresh->thresh_type; 	
+   	//	const DstType value =  _thresh->value; 	
+   	//	const DstType lower =  _thresh->lower;	
+   	//	const DstType upper =  _thresh->upper; 	
+   	//	const DstType true_value =  _thresh->true_value; 	
+   	//	const DstType false_value =  _thresh->false_value; 	
+	//	ihc::collect((ImgThresholdIntel<DstType, IMG_PIXELS, VEC_SIZE, type, 
+	//	value, lower, upper, true_value, false_value,
+	//	 vx_type0, vx_type1, input, output>));
+ #endif
+  }
+};
 
 
 #endif /* SRC_IMG_OTHER_BASE_H_ */

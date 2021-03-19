@@ -84,8 +84,8 @@ template<typename DataType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL,
 	typename vx_type0, typename vx_type1, typename vx_type2, 
 	vx_type0 &input0, vx_type1 &input1, vx_type2 &output,
 	int stream_type0= vx_stream_e, int stream_type1= vx_stream_e, int stream_type2= vx_stream_e>
-struct vxAnd{ 
-	vxAnd(){
+struct vxAndNode{ 
+	vxAndNode(){
 #ifdef Xilinx 
 #pragma HLS INLINE 
 	PixelwiseSameType<DataType, VEC_SIZE, IMG_PIXEL, HIFLIPVX::BITWISE_AND, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, 0>(input0, input1, output);

@@ -113,8 +113,10 @@ using vx_image= typename conditional<stream_type == vx_streamIn_e,
 									ihc::stream_in<vx_image_t<TYPE, SIZE>>,
 		typename conditional<stream_type==vx_streamOut_e, 
 									ihc::stream_out<vx_image_t<TYPE,SIZE>>,
-		typename conditional<stream_type==vx_stream_e, 
-									ihc::stream<vx_image_t<TYPE,SIZE>,ihc::buffer<buff_capacity>>,
+		typename conditional<stream_type==vx_stream_e,
+			typename conditional< SIZE ==1, 
+									ihc::stream<TYPE>, 
+									ihc::stream<vx_image_t<TYPE,SIZE>,ihc::buffer<buff_capacity>>>::type,
 						 vx_image_t<TYPE,SIZE> >::type //default value
 						 >::type
 						 >::type;
@@ -165,8 +167,8 @@ using vx_distribution= typename conditional<stream_type == vx_streamIn_e,
 /*! \brief OpenVX defines Threshold objects for threshold to update images in
  * 			a bynary format 
 */		   
-template<typename T>
-using vx_threshold = _vx_threshold<T>; 
+//template<typename T>
+//using vx_threshold = _vx_threshold<T>; 
 
 /*! \brief Creates an image object
 @param  ImageType The output image type (use "struct vx_image<...>" for vectorization of 2, 4 and 8)

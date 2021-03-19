@@ -41,6 +41,13 @@ ihc::stream<vx_uint8 > streamBCC0_2, streamBCC1_2;  //G copies
 ihc::stream<vx_uint8 > streamRmG_3;  //R-G
 ihc::stream<vx_uint8 > streamRmB_3;  //R-B 
 //
+ihc::stream<vx_uint8 > streamRT_3;  //R output
+ihc::stream<vx_uint8 > streamGT_3;  //R output
+ihc::stream<vx_uint8 > streamBT_3;  //R output
+
+  	vx_uint8 thresValue95 = 95;
+	vx_threshold<vx_uint8> thresh95;
+	thresh95.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
 
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
 	vx_uint16 HEIGHT>
@@ -85,9 +92,6 @@ void skinTone( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg)
 		streamRmB_3> vxSubtractNode1;
 	
 	//apply threshold
-  	vx_uint8 thresValue95 = 95;
-	vx_threshold<vx_uint8> thresh95;
-	thresh95.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
     thresh95.vxSetThresholdAttribute(VX_THRESHOLD_THRESHOLD_VALUE, thresValue95, sizeof(vx_uint8));
 	
   	vx_uint8 thresValue40 = 40;
@@ -104,6 +108,10 @@ void skinTone( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg)
 	vx_threshold<vx_uint8> thresh15;
 	thresh15.vxCreateThreshold(VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
     thresh15.vxSetThresholdAttribute(VX_THRESHOLD_THRESHOLD_VALUE, thresValue15, sizeof(vx_uint8));
+
+    vxThresholdNode<vx_uint8, PIXELS_FHD, decltype(streamRCC1_2),
+		decltype(streamRT_3),streamRCC1_2, streamRT_3>vxThreshR (thresh95);
+	
 //	vxDramWrite <DstType, decltype(streamX_1_2), streamX_1_2, DramTypeOut0, 
 //		VEC_NUM, WIDTH, HEIGHT,32> vxCopyDRAM_Out0 (&OutputImg);
 //

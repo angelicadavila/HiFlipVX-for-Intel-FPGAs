@@ -24,5 +24,8 @@ fun_name=$1
 ls \ip >> file_ip.txt
 sed 's/^/ <FILE name="ip\/&/g' file_ip.txt > file_iptmp.txt
 sed 's/$/" \/>/' file_iptmp.txt > file_ip.txt
-sed '72r file_ip.txt' rtl_template.xml > rtl_graph.xml
+lines=$(sed -n '$=' rtl_template.xml)
+lines=$(expr $lines - 3) 
+sed ""$lines"r file_ip.txt" rtl_template.xml > rtl_graph.xml
+#sed '70r file_ip.txt' rtl_template.xml > rtl_graph.xml
 rm file_ip.txt

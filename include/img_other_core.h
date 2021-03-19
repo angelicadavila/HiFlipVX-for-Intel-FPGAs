@@ -1942,20 +1942,42 @@ VX_TYPE_INT16);
 * @param input       The input image (vx_uint8, vx_int16)
 * @param output      The output image (vx_uint8, vx_int16)
 */
-//template<typename DstType, vx_threshold THRESHOLD, vx_uint32 IMG_PIXELS, 
-//	typename vx_type0, typename vx_type1, vx_type0 &input, vx_type1 &output,
-//	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
-//void ImgThreshold(){
-//
-//	const vx_uint32 INPUT_SIZE = sizeof(SrcType);
-//
-//	// Variables
-//	vx_uint8 cases = 0;
-//	SrcType input_data = 0;
-//	vx_uint8 internal_data[INPUT_SIZE];
-//
-//
-//}
+template<typename DstType, vx_uint32 IMG_PIXELS, vx_uint8 VEC_SIZE, 
+    vx_enum type, DstType value, DstType lower,
+	DstType upper,DstType true_value, DstType false_value,
+	typename vx_type0, typename vx_type1, 
+	 int stream_type0 = vx_stream_e, int stream_type1 = vx_stream_e>
+void ImgThreshold(vx_type0 &input, vx_type1 &output){
+
+	const vx_uint32 vector_pixels = IMG_PIXELS / static_cast<vx_uint32>(VEC_SIZE);
+
+	DstType src;
+	//compute pipeline	
+	for (vx_uint32 i = 0; i < vector_pixels; i++) {
+		#ifdef Xilinx
+			src = input[i];
+		#endif
+	UNROLL_INTEL()	
+		for (vx_uint8 j = 0; j < VEC_SIZE; j++) {
+	UNROLL_XILINX()
+				#if Intel
+					src = input.read();
+				#endif
+				DstType out;
+				if (type == VX_THRESHOLD_TYPE_BINARY){
+			        out= (src > value ) ? true_value : false_value; 
+				}else {//RANGE Threshold
+			        out= ((src < lower) || (src > upper)) ?  false_value : true_value; 
+				}		
+					#ifdef Xilinx
+						output.pixel[j]= out;
+					#elif Intel 
+						output.write(out);
+					#endif
+	
+		}		
+	}
+}
 
 #endif /* SRC_IMG_OTHER_CORE_H_ */
 

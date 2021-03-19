@@ -1,5 +1,5 @@
 
-#define vx_image_in uint8
+#define vx_image_in uint
 
 #define vx_image_out uint8
 

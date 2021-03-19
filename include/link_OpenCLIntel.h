@@ -82,8 +82,9 @@ template<typename DstType, typename StreamType, StreamType &stream_in,typename
 DramTypeOut, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED= 8, 
 enable_if_t<!std::is_same<DstType, vx_uint32>::value,int> = 0 >
 void vxWriteDram(DramTypeOut *dram_out){
-//	DstType data[COALESCED];
-	vx_image<DstType, VEC_NUM> data[COALESCED];
+
+		DstType data[COALESCED];
+		//vx_image<DstType, VEC_NUM> data[COALESCED];
 
 	for (vx_uint32 i = 0; i < WIDTH * HEIGHT/(VEC_NUM*COALESCED); i++){
 
@@ -153,7 +154,8 @@ template<typename SrcType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT,
 	StreamType &stream_out1, enable_if_t<!std::is_same<SrcType, vx_uint32>::value,int> = 0 >
 void SplitStream(){
 //	SrcType data;
-	vx_image<SrcType, VEC_NUM> data;
+	SrcType data;
+	//vx_image<SrcType, VEC_NUM> data;
 	for (vx_uint32 i = 0; i < WIDTH * HEIGHT/(VEC_NUM); i++){
     	//printf("%d\n", i);
 		data = stream_base.read();
