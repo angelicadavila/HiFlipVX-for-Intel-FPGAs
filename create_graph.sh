@@ -75,6 +75,7 @@ if [ "$FPGA_HBM" == "N" ]; then
 	sed -i s/FunctionTemplateName/"$HFfunc_name"/g rtl_template.xml 
 	sed -i s/FunctionTemplateName/"$HFfunc_name"/g c_model.cl
 	sed -i s/FunctionTemplateName/"$HFfunc_name"/g opencl_template.cl
+	mv opencl_template.cl "$func_name".cl
 fi
 
 #MX

@@ -48,7 +48,7 @@ default: canny-fpga
 ###########################################################################
 #whitout modelsim simulation
 .PHONY:canny-fpga
-canny-fpga: 	CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) -D WIDTH_MEM=$(MEM_WIDTH_BOARD) $(INC) -march=$(FPGA_FAMILY) --simulator none -v -o HiFlipVX_Intel
+canny-fpga: 	CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) -D WIDTH_MEM=$(MEM_WIDTH_BOARD) $(INC) -march=$(FPGA_FAMILY) --simulator none -v --clock 100MHz -o HiFlipVX_Intel
 canny-fpga:   SOURCE_FILES := $(SOURCE_FILES) ./graph_test/canny.cpp 
 canny-fpga: 	$(SOURCE_FILES)
 	$(CXX) $(SOURCE_FILES) $(CXXFLAGS) 

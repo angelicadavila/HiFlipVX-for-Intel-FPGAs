@@ -114,12 +114,25 @@ using vx_image= typename conditional<stream_type == vx_streamIn_e,
 		typename conditional<stream_type==vx_streamOut_e, 
 									ihc::stream_out<vx_image_t<TYPE,SIZE>>,
 		typename conditional<stream_type==vx_stream_e,
-			typename conditional< SIZE ==1, 
+				typename conditional< SIZE ==1, 
 									ihc::stream<TYPE>, 
 									ihc::stream<vx_image_t<TYPE,SIZE>,ihc::buffer<buff_capacity>>>::type,
-						 vx_image_t<TYPE,SIZE> >::type //default value
+				typename conditional< SIZE ==1, TYPE,
+						  vx_image_t<TYPE,SIZE> >::type //default value
+						 >::type
 						 >::type
 						 >::type;
+
+//template<class TYPE, const size_t SIZE,int stream_type = vx_streamNull_e, uint buff_capacity=256>
+//using vx_image= typename conditional<stream_type == vx_streamIn_e,
+//									ihc::stream_in<vx_image_t<TYPE, SIZE>>,
+//		typename conditional<stream_type==vx_streamOut_e, 
+//									ihc::stream_out<vx_image_t<TYPE,SIZE>>,
+//		typename conditional<stream_type==vx_stream_e, 
+//									ihc::stream<vx_image_t<TYPE,SIZE>,ihc::buffer<buff_capacity>>,
+//						 vx_image_t<TYPE,SIZE> >::type //default value
+//						 >::type
+//						 >::type;
 
 //*****************PDP 2020**************
 //template<class TYPE, const size_t SIZE,int stream_type = vx_streamNull_e, uint buff_capacity=256>

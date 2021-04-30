@@ -23,7 +23,6 @@ void vxReadDram(DramTypeIn *dram_in){
 // available o`n c++
 
 			vx_image<SrcType, VEC_NUM> data[COALESCED];
-			//SrcType data[COALESCED];
 			auto aux_dram=&(*dram_in[0]);
 			using burst_coalesced =ihc::lsu<ihc::style<ihc::BURST_COALESCED>>;
 			#pragma ii 1
@@ -82,9 +81,7 @@ template<typename DstType, typename StreamType, StreamType &stream_in,typename
 DramTypeOut, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED= 8, 
 enable_if_t<!std::is_same<DstType, vx_uint32>::value,int> = 0 >
 void vxWriteDram(DramTypeOut *dram_out){
-
-		DstType data[COALESCED];
-		//vx_image<DstType, VEC_NUM> data[COALESCED];
+		vx_image<DstType, VEC_NUM> data[COALESCED];
 
 	for (vx_uint32 i = 0; i < WIDTH * HEIGHT/(VEC_NUM*COALESCED); i++){
 
@@ -104,8 +101,8 @@ template<typename DstType, typename StreamType, StreamType &stream_in,typename
 DramTypeOut, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint
 COALESCED= 8, enable_if_t<std::is_same<DstType, vx_uint32>::value,int> = 0 >
 void vxWriteDram(DramTypeOut *dram_out){
-	DstType data[COALESCED];
-//	vx_image<DstType, VEC_NUM> data[COALESCED];
+//	DstType data[COALESCED];
+	vx_image<DstType, VEC_NUM> data[COALESCED];
 
 	for (vx_uint32 i = 0; i < WIDTH * HEIGHT/(VEC_NUM*COALESCED); i++){
 
@@ -153,9 +150,7 @@ template<typename SrcType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT,
 	typename StreamType, StreamType &stream_base, StreamType &stream_out0, 
 	StreamType &stream_out1, enable_if_t<!std::is_same<SrcType, vx_uint32>::value,int> = 0 >
 void SplitStream(){
-//	SrcType data;
-	SrcType data;
-	//vx_image<SrcType, VEC_NUM> data;
+	vx_image<SrcType, VEC_NUM> data;
 	for (vx_uint32 i = 0; i < WIDTH * HEIGHT/(VEC_NUM); i++){
     	//printf("%d\n", i);
 		data = stream_base.read();
