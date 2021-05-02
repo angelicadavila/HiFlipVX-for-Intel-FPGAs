@@ -29,24 +29,23 @@ ihc::align<64>, ihc::waitrequest<true>> DramTypeOut0;
 //all the streamming interfaces should be global for system of task in HLS Intel.
 //trying to balance the task with buffers between task
 #define VEC_INT 1
-ihc::stream<vx_uint32> stream_r_0; 
+vx_image<vx_uint32, VEC_INT, vx_stream_e> stream_r_0; 
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC_1_2;  //YUV output
 
-ihc::stream<vx_uint32> streamCC_1_2;  //YUV output
 //seprating Channels
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC0_1_2;  //Color convert output
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC1_1_2;  //Color Convert output
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC2_1_2;  //Color Convert output
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC3_1_2;  //Color Convert output
 
-ihc::stream<vx_uint32> streamCC0_1_2;  //Color convert output
-ihc::stream<vx_uint32> streamCC1_1_2;  //Color Convert output
-ihc::stream<vx_uint32> streamCC2_1_2;  //Color Convert output
-ihc::stream<vx_uint32> streamCC3_1_2;  //Color Convert output
-
-ihc::stream<vx_uint8 > streamY_2_3;  //Y output
-ihc::stream<vx_uint8 > streamU_2_4;  //U output
-ihc::stream<vx_uint8 > streamV_2_4;  //U output
-ihc::stream<vx_uint8 > streamempty_2_4;  //YUV output
+vx_image<vx_uint8, VEC_INT, vx_stream_e> streamY_2_3;  //Y output
+vx_image<vx_uint8, VEC_INT, vx_stream_e> streamU_2_4;  //U output
+vx_image<vx_uint8, VEC_INT, vx_stream_e> streamV_2_4;  //U output
+vx_image<vx_uint8, VEC_INT, vx_stream_e> streamempty_2_4;  //YUV output
 //
-ihc::stream<vx_uint8 > streamEH_3_4;  //Equalize output
-ihc::stream<vx_uint32> streamCC_4_5;  //Combine output
-ihc::stream<vx_uint32> streamCC_5_6;  //Combine output
+vx_image<vx_uint8, VEC_INT, vx_stream_e>  streamEH_3_4;  //Equalize output
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC_4_5;  //Combine output
+vx_image<vx_uint32, VEC_INT, vx_stream_e> streamCC_5_6;  //Combine output
 
 
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
@@ -81,11 +80,12 @@ void ImgAutocontrast( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg	)
 		HIST_OFFSET, decltype(streamY_2_3), decltype(streamEH_3_4), 
 		streamY_2_3, streamEH_3_4> vxHistogramNode5;
 
-	ImgChannelCombine <vx_uint32, COMB_CHANNEL, PIXELS_FHD,
+	 ImgChannelCombine <vx_uint32, COMB_CHANNEL, PIXELS_FHD,
 		VX_DF_IMAGE_NV12, decltype(streamY_2_3), decltype(streamCC_4_5), 
+	//	streamY_2_3, streamU_2_4, streamV_2_4, streamempty_2_4, streamCC_4_5>
 		streamEH_3_4, streamU_2_4, streamV_2_4, streamempty_2_4, streamCC_4_5>
 		vxChCombinetNode6;
-  
+
 	  ImgConvertColor <vx_uint32, vx_uint32, VEC_NUM, PIXELS_FHD, VX_DF_IMAGE_NV12, 
   		VX_DF_IMAGE_RGB, decltype(streamCC_1_2), decltype(streamCC_5_6), 
   		streamCC_4_5, streamCC_5_6> vxColorRGBNode1;
@@ -94,8 +94,6 @@ void ImgAutocontrast( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg	)
 		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out0 (&OutputImg);		
 	//return results
    	
-//	vxDramWrite <vx_uint32, decltype(stream_r_0), stream_r_0, DramTypeOut0, 
-//		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out0 (&OutputImg);		
 	vxColorNV12Node1.vxReleaseNode();
 	splitStream0.vxReleaseNode();
 	splitStream1.vxReleaseNode();

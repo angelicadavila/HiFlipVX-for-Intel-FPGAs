@@ -280,11 +280,21 @@ IMG_PIXEL>();
 * @param input_data  The input pixel
 * @param output_data The output pixels
 */
-template<typename SrcType, vx_uint32 IMG_PIXELS>
+template<typename SrcType, vx_uint32 IMG_PIXELS, 
+		vx_uint8 VEC_NUM = 1 , int stream_type0 = vx_stream_e >
+ #ifdef Xilinx
 void InputGray(vx_uint32 ptr, SrcType input[IMG_PIXELS], vx_uint8 &input_data,
 vx_uint8 output_data[3]) {
+ #elif Intel
+void InputGray(vx_uint32 ptr, vx_image<SrcType, VEC_NUM, stream_type0>& input, vx_uint8 &input_data,
+	vx_uint8 output_data[3]) {
+ #endif
 
+ #ifdef Xilinx
 	input_data = static_cast<vx_uint8>(input[ptr]);
+ #elif Intel
+	input_data = static_cast<vx_uint8>(input.read());
+ #endif
 	output_data[0] = input_data; // R
 	output_data[1] = input_data; // G
 	output_data[2] = input_data; // B
@@ -300,8 +310,8 @@ vx_uint8 output_data[3]) {
 * @param input_data  The input pixel
 * @param output_data The output pixels
 */
-template<typename SrcType, vx_uint32 IMG_PIXELS, int stream_type0 =vx_stream_e,
- int stream_type1 = vx_stream_e>
+template<typename SrcType, vx_uint32 IMG_PIXELS, vx_uint8 VEC_NUM =1,
+ int stream_type0 =vx_stream_e, int stream_type1 = vx_stream_e>
  #ifdef Xilinx
 void InputRgb(vx_uint8 cases, vx_uint32 &ptr, SrcType input[IMG_PIXELS],
 vx_uint32 &input_data, vx_uint8 output_data[4]) {
@@ -318,7 +328,7 @@ void InputRgb(vx_uint8 cases, vx_uint32 &ptr, vx_image<SrcType,1,stream_type0>
 		input_data = static_cast<vx_uint32>(input[ptr]);
  #elif Intel
 		vx_image<SrcType,1> tmp = input.read();
-		input_data = static_cast<vx_uint32>(tmp.pixel[0]);
+		input_data = static_cast<vx_uint32>(tmp);
  #endif
 		ptr++;
 	}
@@ -336,14 +346,22 @@ void InputRgb(vx_uint8 cases, vx_uint32 &ptr, vx_image<SrcType,1,stream_type0>
 * @param input_data  The input pixel
 * @param output_data The output pixels
 */
-template<typename SrcType, vx_uint32 IMG_PIXELS>
+template<typename SrcType, vx_uint32 IMG_PIXELS, vx_uint8 VEC_NUM =1,
+ int stream_type0 =vx_stream_e, int stream_type1 = vx_stream_e>
+ #ifdef Xilinx
 void InputRgbx(vx_uint32 ptr, SrcType input[IMG_PIXELS], vx_uint32 &input_data,
 vx_uint8 output_data[3]) {
- #ifdef Xilinx
 #pragma HLS INLINE
+#elif Intel
+void InputRgbx(vx_uint32 ptr, vx_image<SrcType, VEC_NUM, stream_type0>& input,
+	vx_uint32 &input_data, vx_uint8 output_data[3]) {
  #endif
 
+ #ifdef Xilinx
 	input_data = static_cast<vx_uint32>(input[ptr]);
+#elif Intel
+	input_data = static_cast<vx_uint32>(input.read());
+ #endif
 	output_data[0] = static_cast<vx_uint8>((input_data >> 0) & 0xFF);
 	output_data[1] = static_cast<vx_uint8>((input_data >> 8) & 0xFF);
 	output_data[2] = static_cast<vx_uint8>((input_data >> 16) & 0xFF);
@@ -356,15 +374,24 @@ vx_uint8 output_data[3]) {
 * @param output_data The input pixels (after conversion)
 * @param output      The output image
 */
-template<typename DstType, vx_uint32 IMG_PIXELS>
+template<typename DstType, vx_uint32 IMG_PIXELS,vx_uint8 VEC_NUM =1, 
+	int stream_type0 =vx_stream_e >
+ #ifdef Xilinx
 void OutputGray(vx_uint32 &ptr, vx_uint8 output_data[3], DstType
 output[IMG_PIXELS]) {
-
+ #elif Intel
+void OutputGray(vx_uint32 &ptr, vx_uint8 output_data[3], vx_image<DstType, VEC_NUM,
+	stream_type0>& output){
+#endif
 	vx_uint32 gray =
 	306 * static_cast<vx_uint32>(output_data[0]) + // (int)((0.299 * 1024)+0.5)
 		601 * static_cast<vx_uint32>(output_data[1]) + // (int)((0.587 * 1024) +0.5)
 		117 * static_cast<vx_uint32>(output_data[2]);  // (int)((0.114 * 1024) +0.5)
+ #ifdef Xilinx
 	output[ptr] = static_cast<DstType>((gray + 512) >> 10); // round to nearest
+ #elif Intel
+	output.write (static_cast<DstType>((gray + 512) >> 10)); // round to nearest
+ #endif
 }
 /*brief Write to YUV output (BT.601)
 * @param DstType     The datatype of the output image
@@ -412,20 +439,31 @@ stream_type0> &output) {
 * @param output_data The input pixels (after conversion)
 * @param output      The output image
 */
-template<typename DstType, vx_uint32 IMG_PIXELS>
+template<typename DstType, vx_uint32 IMG_PIXELS, 
+		vx_uint8 VEC_NUM = 1 , int stream_type0 = vx_stream_e >
+ #ifdef Xilinx
 void OutputRgb(vx_uint8 cases, vx_uint32 &ptr, vx_uint8 output_data[4], DstType
-output[IMG_PIXELS]) {
+	output[IMG_PIXELS]) {
+ #elif Intel
+void OutputRgb(vx_uint8 cases, vx_uint32 &ptr, vx_uint8 output_data[4], 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
+ #endif
  #ifdef Xilinx
 #pragma HLS INLINE
  #endif
 
 	if (cases != 1) {
-		output[ptr] =
+		DstType tmp_out =
 			static_cast<DstType>(output_data[0] << 0) |
 			static_cast<DstType>(output_data[1] << 8) |
 			static_cast<DstType>(output_data[2] << 16) |
 			static_cast<DstType>(output_data[3] << 24);
-		ptr++;
+ 		#ifdef Xilinx
+			output[ptr] = tmp_out;
+			ptr++;
+ 		#elif Intel
+			output.write(tmp_out);
+		#endif
 	}
 }
 
@@ -436,17 +474,27 @@ output[IMG_PIXELS]) {
 * @param output_data The input pixels (after conversion)
 * @param output      The output image
 */
-template<typename DstType, vx_uint32 IMG_PIXELS>
+template<typename DstType, vx_uint32 IMG_PIXELS,
+		vx_uint8 VEC_NUM = 1 , int stream_type0 = vx_stream_e >
+ #ifdef Xilinx
 void OutputRgbx(vx_uint32 &ptr, vx_uint8 output_data[3], DstType
 output[IMG_PIXELS]) {
- #ifdef Xilinx
 #pragma HLS INLINE
+ #elif Intel
+void OutputRgbx(vx_uint32 &ptr, vx_uint8 output_data[4], 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
  #endif
 
-	output[ptr] =
+	DstType tmp_out =
 		(static_cast<DstType>(output_data[0]) << 0) |
 		(static_cast<DstType>(output_data[1]) << 8) |
 		(static_cast<DstType>(output_data[2]) << 16);
+
+ #ifdef Xilinx
+	output[ptr] = tmp_out;
+ #elif Intel
+	output.write (tmp_out);
+ #endif
 }
 
 /** @brief Converts to RGB.
@@ -547,8 +595,14 @@ buffer_data[3], vx_uint8 output_data[3]) {
 * @param input       The input image
 * @param output      The output image
 */
-template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS>
+template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS, 
+		vx_uint8 VEC_NUM = 1, int stream_type0 = vx_stream_e>
+ #ifdef Xilinx
 void ConvertGrayToRgb(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
+ #elif Intel
+void ConvertGrayToRgb(vx_image<SrcType, VEC_NUM, stream_type0>& input, 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
+ #endif
  #ifdef Xilinx
 #pragma HLS INLINE
  #endif
@@ -584,10 +638,14 @@ void ConvertGrayToRgb(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 * @param input       The input image
 * @param output      The output image
 */
-template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS>
-void ConvertGrayToRgbx(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
+template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS,
+		vx_uint8 VEC_NUM = 1, int stream_type0 = vx_stream_e>
  #ifdef Xilinx
+void ConvertGrayToRgbx(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 #pragma HLS INLINE
+ #elif Intel
+void ConvertGrayToRgbx(vx_image<SrcType, VEC_NUM, stream_type0>& input, 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
  #endif
 
 	// Global variables
@@ -613,10 +671,14 @@ void ConvertGrayToRgbx(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 * @param input       The input image
 * @param output      The output image
 */
-template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS>
-void ConvertRgbToGray(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
+template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS,
+		vx_uint8 VEC_NUM = 1, int stream_type0 = vx_stream_e>
  #ifdef Xilinx
+void ConvertRgbToGray(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 #pragma HLS INLINE
+ #elif Intel
+void ConvertRgbToGray(vx_image<SrcType, VEC_NUM, stream_type0>& input, 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
  #endif
 
 	// Global variables
@@ -709,10 +771,14 @@ void ConvertRgbToNv12(SrcType &input, DstType &output) {
 * @param input       The input image
 * @param output      The output image
 */
-template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS>
-void ConvertRgbToRgbx(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
+template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS,
+		vx_uint8 VEC_NUM = 1, int stream_type0 = vx_stream_e>
  #ifdef Xilinx
+void ConvertRgbToRgbx(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 #pragma HLS INLINE
+ #elif Intel
+void ConvertRgbToRgbx(vx_image<SrcType, VEC_NUM, stream_type0>& input, 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
  #endif
 
 	// Global variables
@@ -747,10 +813,14 @@ internal_data);
 * @param input       The input image
 * @param output      The output image
 */
-template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS>
-void ConvertRgbxToGray(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
+template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS,
+		vx_uint8 VEC_NUM = 1, int stream_type0 = vx_stream_e>
  #ifdef Xilinx
+void ConvertRgbxToGray(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 #pragma HLS INLINE
+ #elif Intel
+void ConvertRgbxToGray(vx_image<SrcType, VEC_NUM, stream_type0>& input, 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
  #endif
 
 	// Global variables
@@ -776,10 +846,14 @@ void ConvertRgbxToGray(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 * @param input       The input image
 * @param output      The output image
 */
-template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS>
-void ConvertRgbxToRgb(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
+template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS,
+		vx_uint8 VEC_NUM = 1, int stream_type0 = vx_stream_e>
  #ifdef Xilinx
+void ConvertRgbxToRgb(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
 #pragma HLS INLINE
+ #elif Intel
+void ConvertRgbxToRgb(vx_image<SrcType, VEC_NUM, stream_type0>& input, 
+		vx_image<DstType, VEC_NUM, stream_type0>& output) {
  #endif
 
 	// Global variables
@@ -859,6 +933,7 @@ VX_DF_IMAGE_RGBX);
 	const bool RGBX_to_RGB  = (INPUT_TYPE == VX_DF_IMAGE_RGBX) && (OUTPUT_TYPE
 == VX_DF_IMAGE_RGB);
 
+
 	// Check types (static assertions)
 	const bool allowed_types1 =
 		(IN_IS_SIGNED == false) || (OUT_IS_SIGNED == false);
@@ -884,6 +959,7 @@ datatype_of_input_and_output_must_be_unsigned);
 missmatch_output_datatype_size_and_output_type);
 	STATIC_ASSERT(allowed_types4, color_conversion_type_not_supported);
 
+
 	// Color conversions
 	if (GRAY_to_RGB)
 		ConvertGrayToRgb<SrcType, DstType, IMG_PIXELS>(input, output);
@@ -897,11 +973,12 @@ missmatch_output_datatype_size_and_output_type);
 		ConvertRgbxToGray<SrcType, DstType, IMG_PIXELS>(input, output);
 	else if (RGBX_to_RGB)
 		ConvertRgbxToRgb<SrcType, DstType, IMG_PIXELS>(input, output);
-	else if (RGB_to_NV12)
-		ConvertRgbToNv12<SrcType, DstType, IMG_PIXELS>(input, output);
-	else if (NV12_to_RGB)
-    vx_image<SrcType, VEC_NUM> src1, dst = { 0 };
-    else if (RGB_to_NV12){
+	//else if (RGB_to_NV12)
+	//	ConvertRgbToNv12<SrcType, DstType, IMG_PIXELS>(input, output);
+	//else if (NV12_to_RGB)
+    //vx_image<SrcType, VEC_NUM> src1, dst = { 0 };
+//    else 
+	else if (RGB_to_NV12){
     vx_uint32 src1, dst = 0;
     vx_uint32 vector_pixels = IMG_PIXELS; /// static_cast<vx_uint32>(VEC_NUM);
     for (vx_uint32 i = 0; i < vector_pixels; i++) { 
@@ -941,6 +1018,7 @@ missmatch_output_datatype_size_and_output_type);
 					(( U << 8)) |
 					( Y << 0));
 			output.write(nv12);
+		if(i==3) printf("RGB to NV12 %x \n", nv12);
 	}
 	}
 
@@ -977,9 +1055,9 @@ missmatch_output_datatype_size_and_output_type);
 8));// 
 	vx_int32 B = static_cast<vx_int32>(((298 * C + 516 * D +128 ) >> 8));// 
 
-    vx_uint8 uR =clip(R);
+    vx_uint8 uR =clip(B);
     vx_uint8 uG =clip(G);
-    vx_uint8 uB =clip(B);
+    vx_uint8 uB =clip(R);
 	vx_uint32 rgb =static_cast<vx_uint32>((( uR << 16)) |
 					(( uG << 8)) |
 					( uB << 0));
@@ -1006,10 +1084,7 @@ missmatch_output_datatype_size_and_output_type);
 * @param output      The output image
 */
 template<typename SrcType, const vx_uint16 CHANNEL_ID, const vx_uint32
-IMG_PIXELS, vx_df_image_e INPUT_TYPE,
-typename vx_type0 , 
-typename vx_type1 >
-
+IMG_PIXELS, vx_df_image_e INPUT_TYPE, typename vx_type0 , typename vx_type1 >
 #ifdef Xilinx
 void ChannelExtract(SrcType input[IMG_PIXELS], vx_uint8 output[IMG_PIXELS]) {
 #elif Intel
@@ -1056,8 +1131,6 @@ void ChannelExtract(vx_type0 &input, vx_type1 &output) {
 			input_data = input[j];
 			j++;
 			#elif Intel
-		//	vx_image<SrcType,1> tmp = input.read();
-		//	input_data = tmp.pixel[0];
 			input_data = input.read();
 			#endif
 		}
@@ -1099,8 +1172,6 @@ void ChannelExtract(vx_type0 &input, vx_type1 &output) {
 		#ifdef Xilinx 
 		output[i] = output_data[CHANNEL_ID];
 		#elif Intel
-//    	vx_image<vx_uint8,1> tmp;
-//		tmp.pixel[0] = output_data[CHANNEL_ID];
 		vx_uint8 tmp = output_data[CHANNEL_ID];
 		output.write(tmp);
 		#endif
@@ -1230,10 +1301,9 @@ vx_type0 &input3, vx_type1 &output) {
 		} else if (OUTPUT_TYPE == VX_DF_IMAGE_NV12) {
 			output_data =
 				static_cast<DstType>(internal_data[0]) |
-				static_cast<DstType>(internal_data[1]) |
-				static_cast<DstType>(internal_data[2]) ;
-		//		static_cast<DstType>(internal_data[3]);
-			output_data = output_data & 0x00FFFFFF;
+				(static_cast<DstType>(internal_data[1]) << 8)|
+				(static_cast<DstType>(internal_data[2]) << 16);
+			if(i==3) printf("combine %x \n", output_data);
 		} else if (OUTPUT_TYPE == VX_DF_IMAGE_RGB) {
 			output_data =
 				static_cast<DstType>(internal_data[0]) |
