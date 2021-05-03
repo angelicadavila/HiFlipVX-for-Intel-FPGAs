@@ -1002,23 +1002,22 @@ missmatch_output_datatype_size_and_output_type);
 	output_data[2] = static_cast<vx_uint8>((src1 >> 16) & 0xFF);
 	//output_data[3] = static_cast<vx_uint8>((input >> 24) & 0xFF);
 
-    vx_uint32 R = static_cast<vx_uint32>(output_data[0]);
-    vx_uint32 G = static_cast<vx_uint32>(output_data[1]);
-    vx_uint32 B = static_cast<vx_uint32>(output_data[2]);
+    vx_uint8 R = static_cast<vx_uint8>(output_data[2]);
+    vx_uint8 G = static_cast<vx_uint8>(output_data[1]);
+    vx_uint8 B = static_cast<vx_uint8>(output_data[0]);
     //to Y[0]U[1]V[2]
-	vx_uint32 Y = static_cast<vx_uint32>(((66 * R + 129 * G + 25 * B+ 128) >> 8)
-+ 16);// 
-	vx_uint32 U = static_cast<vx_uint32>(((-38 * R - 74 * G + 112 * B+ 128) >>
-8) + 128);// 
-	vx_uint32 V = static_cast<vx_uint32>(((112 * R - 94 * G - 18 * B+ 128) >> 8)
-+ 128);// 
+	vx_uint8 Y = clip (static_cast<vx_int32>(((66 * (R) + 129 * (G) + 25 * (B)+ 128) >> 8)
++ 16));// 
+	vx_uint8 U = clip (static_cast<vx_int32>(((-38 * (R) - 74 * (G) + 112 * (B)+ 128) >>
+8) + 128));// 
+	vx_uint8 V = clip (static_cast<vx_int32>(((112 * (R) - 94 * (G) - 18 * (B) + 128) >> 8)
++ 128));// 
 
 	vx_uint32 nv12 = 0;
-	nv12 = static_cast<vx_uint32>((( V << 16)) |
+	nv12 = static_cast<vx_uint32>((( Y << 16)) |
 					(( U << 8)) |
-					( Y << 0));
+					( V << 0));
 			output.write(nv12);
-		if(i==3) printf("RGB to NV12 %x \n", nv12);
 	}
 	}
 
@@ -1041,27 +1040,24 @@ missmatch_output_datatype_size_and_output_type);
 	//	InputRgb<SrcType, IMG_PIXELS>(cases, j, input, input_data,
 	//	internal_data);
 
-	output_data[0] = static_cast<vx_uint8>((src1 >> 0) & 0xFF);
-	output_data[1] = static_cast<vx_uint8>((src1 >> 8) & 0xFF);
-	output_data[2] = static_cast<vx_uint8>((src1 >> 16) & 0xFF);
+	output_data[0] = static_cast<vx_uint8>((src1 >> 16) ); //Y
+	output_data[1] = static_cast<vx_uint8>((src1 >> 8) ); //U
+	output_data[2] = static_cast<vx_uint8>((src1 >> 0)); //V
 	//output_data[3] = static_cast<vx_uint8>((input >> 24) & 0xFF);
 
-    vx_int32 C = static_cast<vx_int32>(output_data[0]- 16);
-    vx_int32 D = static_cast<vx_int32>(output_data[1]- 128);
+    vx_int8 C = static_cast<vx_int32>(output_data[0]- 16);
+    vx_int8 D = static_cast<vx_int32>(output_data[1]- 128);
     vx_int32 E = static_cast<vx_int32>(output_data[2]-128);
     //t Y[0]U[1]V[2]
-	vx_int32 R = static_cast<vx_int32>(((298 * C + 409 * E + 128) >> 8) );// 
-	vx_int32 G = static_cast<vx_int32>(((298 * C - 100 * D - 208 * E + 128) >>
-8));// 
-	vx_int32 B = static_cast<vx_int32>(((298 * C + 516 * D +128 ) >> 8));// 
+	vx_uint8 R = clip(static_cast<vx_int32>(((298 * (C) + 409 * (E) + 128) >> 8) ));// 
+	vx_uint8 G = clip(static_cast<vx_int32>(((298 * (C) - 100 * (D) - 208 * (E) + 128) >>
+8)));// 
+	vx_uint8 B = clip(static_cast<vx_int32>(((298 * (C) + 516 * (D) +128 ) >> 8)));// 
 
-    vx_uint8 uR =clip(B);
-    vx_uint8 uG =clip(G);
-    vx_uint8 uB =clip(R);
-	vx_uint32 rgb =static_cast<vx_uint32>((( uR << 16)) |
-					(( uG << 8)) |
-					( uB << 0));
-			output.write(rgb);
+	vx_uint32 rgb =static_cast<vx_uint32>((( R << 16)) |
+				(( G << 8)) |
+				( B << 0));
+		output.write(rgb);
 	}
 
 	}
@@ -1303,7 +1299,6 @@ vx_type0 &input3, vx_type1 &output) {
 				static_cast<DstType>(internal_data[0]) |
 				(static_cast<DstType>(internal_data[1]) << 8)|
 				(static_cast<DstType>(internal_data[2]) << 16);
-			if(i==3) printf("combine %x \n", output_data);
 		} else if (OUTPUT_TYPE == VX_DF_IMAGE_RGB) {
 			output_data =
 				static_cast<DstType>(internal_data[0]) |
@@ -1840,6 +1835,7 @@ ACCURACY) / DISTRIBUTION_RANGE);
 	// Reset histogram
  #ifdef Intel
   #pragma ii 1
+  #pragma unroll DISTRIBUTION_BINS	
  #endif
 	for (vx_uint32 i = 0; i < DISTRIBUTION_BINS; i++) {
  #ifdef Xilinx
@@ -1850,7 +1846,7 @@ ACCURACY) / DISTRIBUTION_RANGE);
 	}
 
 	//index to copy vectorized data
-		vx_uint16 ptr_src=0; //Index vector
+		vx_uint32 ptr_src=0; //Index vector
 		vx_uint32 ptr_src2=0;
     //to save complete image from stream
     SrcType input_Y[IMG_PIXELS]; 	
@@ -1924,22 +1920,17 @@ DISTRIBUTION_RANGE)) && (i < IMG_PIXELS))
     cdf [0] = histogram [0];
 	for (vx_uint32 i = 1; i < DISTRIBUTION_BINS; i++) {
 		cdf[i] = histogram [i] + cdf [i-1];
+//		{printf ("cdf[%d] =  %i \t", i, cdf[i]);}
 	}
    // cdf probabilities
     vx_uint8 eq_dist[DISTRIBUTION_BINS];
 	for (vx_uint32 i = 0; i < DISTRIBUTION_BINS; i++){ 
-        eq_dist[i] = static_cast<vx_uint8>(floor(cdf[i] * (DISTRIBUTION_BINS-1)/
-IMG_PIXELS ));
+	    float quot = static_cast<float>(IMG_PIXELS);
+        float tmp_f =((cdf[i] * (DISTRIBUTION_BINS -1))/ quot) ;
+        eq_dist[i] = static_cast<vx_uint8>(clip(floor(tmp_f + 45)));
+//		{printf ("Equ[%d] =  %i \t", i, eq_dist[i]);}
 	} 
     
-//		#ifdef Xilinx
-//		SrcType input_buffer[VEC_NUM];
-//		#pragma HLS array_partition variable=input_buffer complete dim=0 
-//		#elif Intel 
-//		SrcType input_buffer[VEC_NUM] hls_register;
-//		#endif 
-	
-//		vx_image_t<SrcType, VEC_NUM> input_data; 	
     //redistributing Image
 	for (vx_uint32 i = 0; i < IMG_PIXELS; i++) {
       	vx_uint8 base_index =  input_Y[i];
