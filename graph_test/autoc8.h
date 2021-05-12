@@ -13,18 +13,8 @@
 //aspace memory banks
 //awidth address bus bits (from BSP file: Board_spec.xml )
 
-typedef ihc::mm_master<vx_uint32, ihc::aspace<1>,
-ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<8>,
-ihc::align<64>,ihc::waitrequest<true>> DramTypeIn0; 
-typedef ihc::mm_master<vx_uint32, ihc::aspace<2>,
-ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<8>,
-ihc::align<64>, ihc::waitrequest<true>> DramTypeOut0; 
-//typedef ihc::mm_master<vx_image<vx_uint32, VEC_NUM>, ihc::aspace<1>,
-//ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<8>,
-//ihc::align<64>,ihc::waitrequest<true>> DramTypeIn0; 
-//typedef ihc::mm_master<vx_image<vx_uint32, VEC_NUM>, ihc::aspace<2>,
-//ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<8>,
-//ihc::align<64>, ihc::waitrequest<true>> DramTypeOut0; 
+typedef vxCreateImage <vx_uint32, WIDTH_MEM, 1, VEC_NUM> DramTypeIn0;  
+typedef vxCreateImage <vx_uint32, WIDTH_MEM, 2, VEC_NUM> DramTypeOut0;  
 
 //all the streamming interfaces should be global for system of task in HLS Intel.
 //trying to balance the task with buffers between task
@@ -82,8 +72,8 @@ void ImgAutocontrast( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg	)
 
 	 ImgChannelCombine <vx_uint32, COMB_CHANNEL, PIXELS_FHD,
 		VX_DF_IMAGE_NV12, decltype(streamY_2_3), decltype(streamCC_4_5), 
-	//	streamY_2_3, streamU_2_4, streamV_2_4, streamempty_2_4, streamCC_4_5>
-		streamEH_3_4, streamU_2_4, streamV_2_4, streamempty_2_4, streamCC_4_5>
+		//streamY_2_3, streamU_2_4, streamV_2_4, streamempty_2_4, streamCC_4_5>
+		streamV_2_4, streamU_2_4, streamEH_3_4, streamempty_2_4, streamCC_4_5>
 		vxChCombinetNode6;
 
 	  ImgConvertColor <vx_uint32, vx_uint32, VEC_NUM, PIXELS_FHD, VX_DF_IMAGE_NV12, 

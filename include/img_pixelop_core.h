@@ -514,7 +514,10 @@ vx_uint32 PixelwiseCheckSameType() {
 @param in2             2. input image
 @param out             Output image
 */
-template<typename ScalarType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, HIFLIPVX::PixelwiseOperationA OPERATION_TYPE, vx_convert_policy_e CONV_POLICY, vx_round_policy_e ROUND_POLICY, vx_uint32 SCALE,typename vx_type0, typename vx_type1,typename vx_type2>
+template<typename ScalarType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, HIFLIPVX::PixelwiseOperationA OPERATION_TYPE, vx_convert_policy_e CONV_POLICY, vx_round_policy_e ROUND_POLICY, vx_uint32 SCALE,
+typename vx_type0, typename vx_type1,typename vx_type2,
+enable_if_t<!std::is_same<vx_image<ScalarType,VEC_SIZE>, ScalarType>::value,int> = 0 
+>
 #ifdef Xilinx 
 void PixelwiseSameType(vx_image<ScalarType, VEC_SIZE> input1[IMG_PIXEL / VEC_SIZE], vx_image<ScalarType, VEC_SIZE> input2[IMG_PIXEL / VEC_SIZE], vx_image<ScalarType, VEC_SIZE> output[IMG_PIXEL / VEC_SIZE]) {
 #elif Intel
@@ -525,7 +528,7 @@ void PixelwiseSameType(vx_type0 &input1, vx_type1 &input2, vx_type2 &output) {
  #endif  
 
 	// Variables
-
+	vx_image<ScalarType, VEC_SIZE> src1, src2, dst = { 0 };
 	// Check if input correct
 	const vx_uint32 vector_pixels = PixelwiseCheckSameType<ScalarType, VEC_SIZE, IMG_PIXEL>();
 
@@ -535,12 +538,15 @@ void PixelwiseSameType(vx_type0 &input1, vx_type1 &input2, vx_type2 &output) {
 
 		// Read input
 #ifdef Xilinx 
-	vx_image<ScalarType, VEC_SIZE> src1, src2, dst = { 0 };
 		src1 = input1[i];
+#elif Intel
+		src1 = input1.read();
+#endif
 		if ((OPERATION_TYPE != HIFLIPVX::BITWISE_NOT) || (OPERATION_TYPE == HIFLIPVX::COPY_DATA))
+#ifdef Xilinx 
 			src2 = input2[i];
 #elif Intel
-	ScalarType src1, src2, dst = { 0 };
+			src2 = input2.read();
 #endif
 
 		// Computes a vector of pixelwise operations in parallel
@@ -548,29 +554,50 @@ void PixelwiseSameType(vx_type0 &input1, vx_type1 &input2, vx_type2 &output) {
 UNROLL_INTEL()
 		for (vx_uint16 j = 0; j < VEC_SIZE; j++) {
 UNROLL_XILINX()
-#ifdef Xilinx 
-			PixelwiseComputeSameType<ScalarType, OPERATION_TYPE, CONV_POLICY, ROUND_POLICY, SCALE>(src1.pixel[j], src2.pixel[j], dst.pixel[j]);
-#elif Intel
-		src1 = input1.read();
-			src2 = input2.read();
-			PixelwiseComputeSameType<ScalarType, OPERATION_TYPE, CONV_POLICY, ROUND_POLICY, SCALE>(src1, src2, dst);
-		output.write(dst);
-#endif
+			PixelwiseComputeSameType<ScalarType, OPERATION_TYPE, CONV_POLICY, 
+				ROUND_POLICY, SCALE>(src1.pixel[j], src2.pixel[j], dst.pixel[j]);
 		}
 
 		// Write output
 #ifdef Xilinx 
 		output[i] = dst;
 #elif Intel
-		//output.write(dst);
+		output.write(dst);
 #endif
 	}
 }
+/*******/
+//Template especialization for Scalar types in Intel with vectorization factor of 1
+template<typename ScalarType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, HIFLIPVX::PixelwiseOperationA OPERATION_TYPE, vx_convert_policy_e CONV_POLICY, vx_round_policy_e ROUND_POLICY, vx_uint32 SCALE,typename vx_type0, typename vx_type1,typename vx_type2, enable_if_t<std::is_same<vx_image<ScalarType,VEC_SIZE>, ScalarType>::value,int> = 0>
+void PixelwiseSameType(vx_type0 &input1, vx_type1 &input2, vx_type2 &output) {
+	// Variables
+	vx_image<ScalarType, VEC_SIZE> src1, src2, dst = { 0 };
+	// Check if input correct
+	const vx_uint32 vector_pixels = PixelwiseCheckSameType<ScalarType, VEC_SIZE, IMG_PIXEL>();
+
+	// Computes pixelwise operations (pipelined)
+	for (vx_uint32 i = 0; i < vector_pixels; i++) {
+		// Read input
+		src1 = input1.read();
+		if ((OPERATION_TYPE != HIFLIPVX::BITWISE_NOT) || (OPERATION_TYPE == HIFLIPVX::COPY_DATA))
+			src2 = input2.read();
+		// Computes a vector of pixelwise operations in parallel
+
+		UNROLL_INTEL()
+		for (vx_uint16 j = 0; j < VEC_SIZE; j++) {
+			PixelwiseComputeSameType<ScalarType, OPERATION_TYPE, CONV_POLICY, ROUND_POLICY, SCALE>(src1, src2, dst);
+		}
+
+		output.write(dst);
+	}
+}
+//end template especialization
+
+/**///
+ #ifdef Xilinx 
 template<typename ScalarType, vx_uint8 VEC_SIZE, vx_uint32 IMG_PIXEL, HIFLIPVX::PixelwiseOperationA OPERATION_TYPE, vx_convert_policy_e CONV_POLICY, vx_round_policy_e ROUND_POLICY, vx_uint32 SCALE>
 void PixelwiseSameType(ScalarType input1[IMG_PIXEL / VEC_SIZE], ScalarType input2[IMG_PIXEL / VEC_SIZE], ScalarType output[IMG_PIXEL / VEC_SIZE]) {
- #ifdef Xilinx 
 #pragma HLS INLINE 
- #endif  
 
 	// Variables
 	ScalarType src1 = 0, src2 = 0, dst = 0;
@@ -594,5 +621,6 @@ void PixelwiseSameType(ScalarType input1[IMG_PIXEL / VEC_SIZE], ScalarType input
 		output[i] = dst;
 	}
 }
+ #endif  
 
 #endif /* SRC_IMG_PIXELOP_CORE_H_ */

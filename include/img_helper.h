@@ -120,30 +120,21 @@ using vx_image= typename conditional<stream_type == vx_streamIn_e,
 				typename conditional< SIZE ==1, TYPE,
 						  vx_image_t<TYPE,SIZE> >::type //default value
 						 >::type
-						 >::type
-						 >::type;
-
-//template<class TYPE, const size_t SIZE,int stream_type = vx_streamNull_e, uint buff_capacity=256>
-//using vx_image= typename conditional<stream_type == vx_streamIn_e,
-//									ihc::stream_in<vx_image_t<TYPE, SIZE>>,
-//		typename conditional<stream_type==vx_streamOut_e, 
-//									ihc::stream_out<vx_image_t<TYPE,SIZE>>,
-//		typename conditional<stream_type==vx_stream_e, 
-//									ihc::stream<vx_image_t<TYPE,SIZE>,ihc::buffer<buff_capacity>>,
-//						 vx_image_t<TYPE,SIZE> >::type //default value
-//						 >::type
-//						 >::type;
-
-//*****************PDP 2020**************
-//template<class TYPE, const size_t SIZE,int stream_type = vx_streamNull_e, uint buff_capacity=256>
-//struct   vxCreateVirtualImage(){
-//
-//	vx_test image; 
-//	return image;
-//
-//}
+			 >::type
+		 >::type;
 
 
+/*! \brief Intel SDK defines Avalon MM interfaces
+		   the stream_in and stream_out are required,.
+		   Default: typedef vxCreateImage
+@param  TYPE	 Data type
+@param  SIZE     Vector size
+@param  WD_MEM   size of the data bus, from Intel BSP
+@param  PORT     enumerates the number of ports to be crates, one per global access
+@param embedded  chosse if the platform is embedeed or accelerator.
+*/
+template<class TYPE, const uint WD_MEM, const int PORT=1, const uint SIZE=1, uint embeded=1>
+using vxCreateImage = typename conditional < embeded == 1, ihc::mm_master<vx_image<TYPE,SIZE>, ihc::aspace<PORT>,ihc::awidth<32>, ihc::dwidth<WD_MEM>, ihc::latency<0>, ihc::maxburst<8>, ihc::align<64>, ihc::waitrequest<true>>, vx_image<TYPE, SIZE>>::type ;
 
 /*! \brief Intel SDK defines 3 stream access, if an embeded system need to use the lybrary
 		   the stream_in and stream_out are required,.

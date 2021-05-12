@@ -15,11 +15,8 @@
 //waitrequest is necessary when the system uses burst_size > 1
 //aspace memory banks
 //awidth address bus bits (from BSP file: Board_spec.xml )
-typedef ihc::mm_master<vx_uint32, ihc::aspace<1>,
-ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<16>, ihc::align<64>, ihc::waitrequest<true>> DramTypeIn0; 
-typedef ihc::mm_master<vx_uint8, ihc::aspace<2>,
-ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<16>, ihc::align<64>, ihc::waitrequest<true>> DramTypeOut0; 
-
+typedef vxCreateImage<vx_uint32, WIDTH_MEM, 1> DramTypeIn0; 
+typedef vxCreateImage<vx_uint8, WIDTH_MEM, 2> DramTypeOut0; 
 
 //all the streamming interfaces should be global for system of task in HLS Intel.
 //trying to balance the task with buffers between task
@@ -78,7 +75,7 @@ void skinTone( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg)
 
 	//Is it doing prefetching? buff->trying to improve the buffer.
 	vxDramRead <vx_uint32, decltype(stream_r_0), stream_r_0, DramTypeIn0, 1, 
-		WIDTH, HEIGHT,4> vxCopyDRAM_In0 (&InputImg);
+		WIDTH, HEIGHT,16> vxCopyDRAM_In0 (&InputImg);
 
 	//copy the imput stream for 3 
 	vxSplitStream <vx_uint32, VEC_NUM, WIDTH, HEIGHT, decltype(stream_r_0), 
@@ -144,7 +141,7 @@ void skinTone( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg)
 		decltype(streamSkin), streamRaGaB, streamRmGaRmB,streamSkin> vxAnd4;		
 
 	vxDramWrite <vx_uint8, decltype(streamSkin), streamSkin, DramTypeOut0, 
-		VEC_INT, WIDTH, HEIGHT,8> vxCopyDRAM_Out0 (&OutputImg);
+		VEC_INT, WIDTH, HEIGHT,64> vxCopyDRAM_Out0 (&OutputImg);
 	//vxDramWrite <vx_uint8, decltype(streamSkin), streamSkin, DramTypeOut0, 
 	//	VEC_INT, WIDTH, HEIGHT,32> vxCopyDRAM_Out0 (&OutputImg);
 

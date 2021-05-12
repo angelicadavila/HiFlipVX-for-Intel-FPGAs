@@ -12,13 +12,8 @@
 //waitrequest is necessary when the system uses burst_size > 1
 //aspace memory banks
 //awidth address bus bits (from BSP file: Board_spec.xml )
-typedef ihc::mm_master<vx_image<vx_uint8, VEC_NUM>, ihc::aspace<1>,
-ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<8>,
-ihc::align<64>,ihc::waitrequest<true>> DramTypeIn0; 
-
-typedef ihc::mm_master<vx_image<vx_int8, VEC_NUM>, ihc::aspace<2>,
-ihc::awidth<32>, ihc::dwidth<WIDTH_MEM>, ihc::latency<0>, ihc::maxburst<8>,
-ihc::align<64>, ihc::waitrequest<true>> DramTypeOut0; 
+typedef vxCreateImage <vx_uint8, WIDTH_MEM, 1, VEC_NUM> DramTypeIn0; 
+typedef vxCreateImage <vx_int8, WIDTH_MEM, 2, VEC_NUM> DramTypeOut0; 
 
 
 //all the streamming interfaces should be global for system of task in HLS Intel.

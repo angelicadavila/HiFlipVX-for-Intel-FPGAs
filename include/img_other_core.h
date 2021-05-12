@@ -1835,7 +1835,7 @@ ACCURACY) / DISTRIBUTION_RANGE);
 	// Reset histogram
  #ifdef Intel
   #pragma ii 1
-  #pragma unroll DISTRIBUTION_BINS	
+//  #pragma unroll DISTRIBUTION_BINS	
  #endif
 	for (vx_uint32 i = 0; i < DISTRIBUTION_BINS; i++) {
  #ifdef Xilinx
@@ -1896,8 +1896,8 @@ DISTRIBUTION_RANGE)) && (i < IMG_PIXELS))
 			cur_val = LUTA[cur_bin];
 			LUTB[pre_bin] = pre_val;
 		} else {
-			cur_val = LUTB[cur_bin];
-			LUTA[pre_bin] = pre_val;
+			cur_val = hls_fpga_reg (LUTB[cur_bin]);
+			LUTA[pre_bin] = hls_fpga_reg (pre_val);
 		}
 
 		// Increment histogram value

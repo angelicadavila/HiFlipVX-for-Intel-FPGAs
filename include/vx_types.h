@@ -254,7 +254,7 @@ enum vx_df_image_e {
 	* The range of data is 32-bit, as it is extracted from a YUV or
 	* generated.
     */
-	VX_DF_IMAGE_NV12 = VX_DF_IMAGE('N','V','1','2'),
+	VX_DF_IMAGE_NV12 = VX_DF_IMAGE('N', 'V', '1', '2'),
 };
 
 /*! \brief The Threshold types.
