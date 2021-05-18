@@ -6,7 +6,7 @@ the programming model for Intel FPGA Devices using the Intel System of Task.
 
 This library supports embbeded and acceletarion with the interoperation with OpenCL as aocl library.
 
-##Main Changes
+## Main Changes
 * This library uses the Intel System of Task to enable concurrency in the OpenVX graph
 * Pragma definitions was adapted to Intel standar.
 * Makefile added for linux system
@@ -20,11 +20,11 @@ This library supports embbeded and acceletarion with the interoperation with Ope
   ```
 - Set Board Support Package for FPGA board accelerator in enviroment variable. i.e. for Stratix 10 GX:
   ```sh
-export AOCL_BOARD_PACKAGE_ROOT = intelFPGA_pro/19.4/hld/board/s10_ref
+	export AOCL_BOARD_PACKAGE_ROOT = intelFPGA_pro/19.4/hld/board/s10_ref
   ```
 - xmllint tool dependency
   ```sh
-sudo apt-get install libxml2-utils
+	sudo apt-get install libxml2-utils
   ```
 ### Test Examples
 * Sobel Filter
@@ -72,7 +72,12 @@ List of  graph examples in Makefile
 ```
 
 ### Publications
-M. A. DÃ¡vila-GuzmÃ¡n, R. G. Tejero, M. Villarroya-GaudÃ³, D. S. Gracia, L. Kalms and D. GÃ¶hringer, "A Cross-Platform OpenVX Library for FPGA Accelerators," 2021 29th Euromicro International Conference on Parallel, Distributed and Network-Based Processing (PDP), 2021, pp. 75-83, doi: 10.1109/PDP52278.2021.00020.
+
+M. A. D\'avila-GuzmÃ¡n, R. G. Tejero, M. Villarroya-GaudÃ³, D. S. Gracia, L. Kalms and D.
+GÃ¶hringer, "A Cross-Platform OpenVX Library for FPGA Accelerators," 2021 29th
+Euromicro International Conference on Parallel, Distributed and Network-Based
+Processing (PDP), 2021, pp. 75-83, doi: 10.1109/PDP52278.2021.00020.
+
 
 ##### bibtex:
 
