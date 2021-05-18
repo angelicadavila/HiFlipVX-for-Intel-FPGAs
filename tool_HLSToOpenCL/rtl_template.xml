@@ -1,7 +1,7 @@
 <RTL_SPEC>
   <!-- 'name' is how this function will be called from an OpenCL kernel.
        'module' is the top-level HDL module name that implements the function. -->
-  <FUNCTION name= "FunctionTemplateName" module="FunctionTemplateName_internal">
+  <FUNCTION name= "*" module="*_internal">
     <ATTRIBUTES>
       <!-- Setting IS_STALL_FREE="yes" means the function neither generates stalls internally nor can it
            properly handle incoming stalls (because it simply ignores its stall/valid inputs). If set
@@ -54,16 +54,18 @@
       <MEM_INPUT port="InputImg" access="readwrite"/>
       <MEM_INPUT port="OutputImg" access="readwrite"/>
 
-      <AVALON_MEM port="avmm_1_rw" width="512" burstwidth="5" optype="read" buffer_location="" />
-      <AVALON_MEM port="avmm_2_rw" width="512" burstwidth="5" optype="write" buffer_location="" />
+      <AVALON_MEM port="avmm_1_rw" width="256" burstwidth="5" optype="read"
+buffer_location="HBM0" />
+      <AVALON_MEM port="avmm_2_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM1" />
 
     </INTERFACE>
     <C_MODEL>
-      <FILE name="c_model.cl" />
+      <FILE name="c_modelMX.cl" />
     </C_MODEL>
     <REQUIREMENTS>
 	
-        <FILE name="FunctionTemplateName_internal.v" />
+        <FILE name="*_internal.v" />
  
 
   </REQUIREMENTS>

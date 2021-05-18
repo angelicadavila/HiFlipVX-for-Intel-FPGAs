@@ -133,8 +133,12 @@ using vx_image= typename conditional<stream_type == vx_streamIn_e,
 @param  PORT     enumerates the number of ports to be crates, one per global access
 @param embedded  chosse if the platform is embedeed or accelerator.
 */
-template<class TYPE, const uint WD_MEM, const int PORT=1, const uint SIZE=1, uint embeded=1>
-using vxCreateImage = typename conditional < embeded == 1, ihc::mm_master<vx_image<TYPE,SIZE>, ihc::aspace<PORT>,ihc::awidth<32>, ihc::dwidth<WD_MEM>, ihc::latency<0>, ihc::maxburst<8>, ihc::align<64>, ihc::waitrequest<true>>, vx_image<TYPE, SIZE>>::type ;
+template<class TYPE, const uint WD_MEM, const int PORT=1, const uint SIZE=1, 
+		uint embeded=1>
+using vxCreateImage = typename conditional < embeded == 1, 
+		ihc::mm_master<vx_image<TYPE,SIZE>, ihc::aspace<PORT>,ihc::awidth<32>, 
+		ihc::dwidth<WD_MEM>, ihc::latency<0>, ihc::maxburst<8>, ihc::align<64>, 
+		ihc::waitrequest<true>>, vx_image<TYPE, SIZE>>::type ;
 
 /*! \brief Intel SDK defines 3 stream access, if an embeded system need to use the lybrary
 		   the stream_in and stream_out are required,.

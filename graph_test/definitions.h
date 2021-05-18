@@ -23,8 +23,8 @@ const auto PIXELS_FHD = COLS_FHD*ROWS_FHD;
 // Vectorization
 //const vx_uint8 VEC_NUM =1;
 //autoc
-const vx_uint8 VEC_NUM = 1;
-//const vx_uint8 VEC_NUM = 8;
+//const vx_uint8 VEC_NUM = 1;
+const vx_uint8 VEC_NUM = 8;
 const vx_uint16 VEC_PIX = static_cast<vx_uint16>(PIXELS_FHD / VEC_NUM);
 
 // Defines

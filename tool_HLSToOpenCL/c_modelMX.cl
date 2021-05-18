@@ -19,7 +19,7 @@ typedef struct vx_image_t{
 }vx_image_in
 
 typedef struct vx_image_t{
-    uint8 pixel[8]
+    int8 pixel[8]
 }vx_image_out
 
 #define global_t(data_type, hbm_bank_name) \ 
@@ -27,7 +27,7 @@ typedef struct vx_image_t{
 
 void FunctionTemplateName ( global_t(vx_image_in, "HBM0")* Img_in,
                global_t(vx_image_out, "HBM1")* Img_out,
-               global_t(vx_image_out, "HBM2")* Img_out1
+//               global_t(vx_image_out, "HBM2")* Img_out1
                     ) {
 
 }

@@ -1,7 +1,7 @@
 
 #define vx_image_in uint
 
-#define vx_image_out uint8
+#define vx_image_out uint
 
 void FunctionTemplateName ( __global vx_image_in* Img_in,
 			  __global vx_image_out* Img_outx

@@ -63,44 +63,6 @@ struct vx_threshold {
     static const TYPE true_value = _true_value;
      /*! \brief False value for output */
     static const TYPE false_value = _false_value;
-//   private:
-//    constexpr _vx_threshold<TYPE> vxCreateThreshold(vx_enum thresh_type, vx_enum data_type){
-//	    _vx_threshold<TYPE> threshold;	
-//		 threshold.thresh_type = thresh_type;
-//		return threshold;
-//	}
-	
-//	void vxSetThresholdAttribute(vx_enum attribute, const TYPE const_value, vx_size size){
-//        switch (attribute)
-//        {
-//            case VX_THRESHOLD_THRESHOLD_VALUE:
-//                if (thresh_type == VX_THRESHOLD_TYPE_BINARY)
-//                {
-//                    value = const_value;//*(vx_int32 *)ptr;
-//                }
-//                break;
-//            case VX_THRESHOLD_THRESHOLD_LOWER:
-//                if ( thresh_type == VX_THRESHOLD_TYPE_RANGE)
-//                {
-//                    lower = value;
-//                }
-//                break;
-//            case VX_THRESHOLD_THRESHOLD_UPPER:
-//                if (thresh_type == VX_THRESHOLD_TYPE_RANGE)
-//                {
-//                    upper= value;
-//                }
-//                break;
-//            case VX_THRESHOLD_TRUE_VALUE:
-//                    true_value = value;
-//                break;
-//            case VX_THRESHOLD_FALSE_VALUE:
-//                    false_value = value;
-//                break;
-//            default:
-//            break;
-//        }
-//	}
 };
 
 #endif

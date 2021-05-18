@@ -94,7 +94,7 @@ pwd
 
 telegram "%F0%9F%9A%80 start Compilation ..."
 aoc -profile -v -l "$HFfunc_name"_lib.aoclib "$func_name".cl -o ./../device/"$func_name"_openCL.aocx
-telegram "end Macizo %F0%9F%8C%BD"
+telegram "end ATPS %F0%9F%8C%BD"
 
 cd ../..
 #cp -r $func_name $moving_name
