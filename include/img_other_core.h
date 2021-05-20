@@ -717,9 +717,8 @@ template<typename SrcType, typename DstType, vx_uint32 IMG_PIXELS, int
  #ifdef Xilinx
 void ConvertRgbToNv12(SrcType input[IMG_PIXELS], DstType output[IMG_PIXELS]) {
  #elif Intel
-void ConvertRgbToNv12(SrcType &input, DstType &output) {
-//void ConvertRgbToNv12(vx_image<SrcType,1,stream_type0> &input,
-//vx_image<DstType,1, stream_type1> &output) {
+void ConvertRgbToNv12( vx_image<SrcType, VEC_NUM, stream_type0>& input,
+		vx_image<DstType, VEC_NUM, stream_type0>& output){
  #endif
  #ifdef Xilinx
 #pragma HLS INLINE
@@ -732,30 +731,12 @@ void ConvertRgbToNv12(SrcType &input, DstType &output) {
 	vx_uint8 buffer_data[3];
 	vx_uint8 output_data[3];
 
+	for (vx_uint32 i = 0, j = 0; i < IMG_PIXELS; i++) {
 		// Read from input and store it into internal data
-	//	InputRgb<SrcType, IMG_PIXELS>(cases, j, input, input_data,
-	//	internal_data);
+	InputRgb<SrcType, IMG_PIXELS>(cases, j, input, input_data,
+		internal_data);
 
-	output_data[0] = static_cast<vx_uint8>((input >> 0) & 0xFF);
-	output_data[1] = static_cast<vx_uint8>((input >> 8) & 0xFF);
-	output_data[2] = static_cast<vx_uint8>((input >> 16) & 0xFF);
-	//output_data[3] = static_cast<vx_uint8>((input >> 24) & 0xFF);
-
-    vx_uint32 R = static_cast<vx_uint32>(output_data[0]);
-    vx_uint32 G = static_cast<vx_uint32>(output_data[1]);
-    vx_uint32 B = static_cast<vx_uint32>(output_data[2]);
-    //to Y[0]U[1]V[2]
-	vx_uint32 Y = static_cast<vx_uint32>(((66 * R + 129 * G + 25 * B+ 128) >> 8)
-+ 16);// 
-	vx_uint32 U = static_cast<vx_uint32>(((-38 * R - 74 * G + 112 * B+ 128) >>
-8) + 128);// 
-	vx_uint32 V = static_cast<vx_uint32>(((112 * R - 94 * G - 18 * B+ 128) >> 8)
-+ 128);// 
-
-	vx_uint32 nv12 =static_cast<vx_uint32>((( V << 16) ) |
-					(( U << 8)) |
-					( Y << 0));
-    output = nv12;
+    //output = nv12;
 		// Conversion
 	//	ConvertFromRgb(cases, internal_data, buffer_data, output_data);
 
