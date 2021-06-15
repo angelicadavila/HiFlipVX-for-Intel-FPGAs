@@ -46,10 +46,11 @@
     <INTERFACE>
       <AVALON port="clock" type="clock"/>
       <AVALON port="resetn" type="resetn"/>
-	  <AVALON port="start" type="ivalid"/>
+      <AVALON port="start" type="ivalid"/>
       <AVALON port="stall" type="iready"/>
       <AVALON port="done" type="ovalid"/>
       <AVALON port="busy" type="oready"/>
+      <INPUT  port="rows" width="32"/>
 
       <MEM_INPUT port="InputImg" access="readwrite"/>
       <MEM_INPUT port="OutputImg" access="readwrite"/>

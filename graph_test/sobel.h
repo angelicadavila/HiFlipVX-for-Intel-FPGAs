@@ -31,11 +31,11 @@ vx_image<vx_int8 ,VEC_INT , vx_stream_e> streamY_1_2;
 
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
 	vx_uint16 HEIGHT, vx_uint8 KERN_SIZE, vx_border_e BORDER_TYPE	>
-void ImgSobelFunc( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg, DramTypeOut1 &OutputImg1	)
+void ImgSobelFunc( DramTypeIn0 &InputImg, DramTypeOut0 &OutputImg, DramTypeOut1 &OutputImg1, const uint rows	)
 {
 	//Is it doing prefetching? buff->trying to improve the buffer.
 	vxDramRead <SrcType, decltype(stream_r_0), stream_r_0, DramTypeIn0, VEC_NUM, 
-		WIDTH, HEIGHT,32> vxCopyDRAM_In0 (&InputImg);
+		WIDTH, HEIGHT,32> vxCopyDRAM_In0 (rows, &InputImg);
 	//for canny filter 1-Gauus..2- Sobel 
 	//Sobel Filter
 	ImgSobel <SrcType, DstType,VEC_NUM, WIDTH, HEIGHT, KERN_SIZE, BORDER_TYPE, 

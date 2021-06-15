@@ -28,6 +28,7 @@ typedef struct vx_image_t{
 void FunctionTemplateName ( global_t(vx_image_in, "HBM0")* Img_in,
                global_t(vx_image_out, "HBM1")* Img_out,
 //               global_t(vx_image_out, "HBM2")* Img_out1
+		const int rows
                     ) {
 
 }

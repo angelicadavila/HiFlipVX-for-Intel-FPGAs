@@ -18,7 +18,7 @@ using burst_coalesced = lsu<style<BURST_COALESCED>>;
 template<typename SrcType, typename StreamType, StreamType &stream_out,typename
 DramTypeIn, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED,
 enable_if_t<!std::is_same<SrcType, vx_uint32>::value,int> = 0 >
-void vxReadDram(DramTypeIn *dram_in){
+void vxReadDram(const uint rows, DramTypeIn *dram_in){
 // verifies the data type in src, template specialization is not currently
 // available o`n c++
 
@@ -26,7 +26,7 @@ void vxReadDram(DramTypeIn *dram_in){
 			auto aux_dram=&(*dram_in[0]);
 			using burst_coalesced =ihc::lsu<ihc::style<ihc::BURST_COALESCED>>;
 			#pragma ii 1
-			for (auto i = 0; i < WIDTH * HEIGHT/(VEC_NUM*COALESCED); i++){
+			for (auto i = 0; i < WIDTH * rows/(VEC_NUM*COALESCED); i++){
 		//	First version		
 				UNROLL_INTEL()
 				for (vx_uint8 j = 0; j < COALESCED; ++j) 
@@ -187,9 +187,9 @@ void SplitStream(){
 template<typename SrcType, typename StreamType, StreamType &input0, typename DramTypeIn, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED>
 struct vxDramRead
 {
-    vxDramRead(DramTypeIn *dram_in){
+    vxDramRead(const uint rows, DramTypeIn *dram_in){
 	//ihc::launch((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT, COALESCED>)); 
-	ihc::launch((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT, COALESCED>), dram_in); 
+	ihc::launch((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT, COALESCED>), rows,dram_in); 
 	}
     void vxReleaseNode(){
 //	ihc::collect((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT,COALESCED>)); 

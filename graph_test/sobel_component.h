@@ -16,7 +16,8 @@ extern "C" template component
 void ImgSobelFunc<vx_uint8, vx_int8, VEC_NUM, COLS_FHD,ROWS_FHD, FILTER_SIZE, SOBEL_BORDER>(
 DramTypeIn0 &InputImg,
 DramTypeOut0 &OutputImg, 
-DramTypeOut1 &OutputImg1 
+DramTypeOut1 &OutputImg1,
+const uint rows
 ); 
 /*******************************************************************************/
 /*******************************************************************************/

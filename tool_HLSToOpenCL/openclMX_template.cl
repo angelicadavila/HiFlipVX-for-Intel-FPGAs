@@ -13,13 +13,15 @@ typedef struct vx_imageo_t{
     __global __attribute((buffer_location(hbm_bank_name))) data_type
 
 void FunctionTemplateName ( global_t (vx_image_in, "HBM0")* Img_in,
-			  global_t (vx_image_out, "HBM1")* Img_outx
+			  global_t (vx_image_out, "HBM1")* Img_outx,
+		    	  const uint rows
 );
 
 
 __kernel void exm1( global_t(vx_image_in, "HBM0")* restrict Img_in,
-                    global_t(vx_image_out, "HBM1")* restrict Img_outx
+                    global_t(vx_image_out, "HBM1")* restrict Img_outx,
+		    const uint rows
 ) {
-    FunctionTemplateName (Img_in, Img_outx);
+    FunctionTemplateName , rows(Img_in, Img_outx);
 }
 
