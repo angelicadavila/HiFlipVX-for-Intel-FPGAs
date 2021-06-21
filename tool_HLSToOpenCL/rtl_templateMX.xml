@@ -50,15 +50,48 @@
       <AVALON port="stall" type="iready"/>
       <AVALON port="done" type="ovalid"/>
       <AVALON port="busy" type="oready"/>
-      <INPUT  port="rows" width="32"/>
 
-      <MEM_INPUT port="InputImg" access="readwrite"/>
-      <MEM_INPUT port="OutputImg" access="readwrite"/>
+      <MEM_INPUT port="Input00" access="readonly"/>
+      <MEM_INPUT port="Output00" access="readwrite"/>
+      <MEM_INPUT port="Output10" access="readwrite"/>
+
+      <MEM_INPUT port="Input01" access="readonly"/>
+      <MEM_INPUT port="Output01" access="readwrite"/>
+      <MEM_INPUT port="Output11" access="readwrite"/>
+
+      <MEM_INPUT port="Input02" access="readonly"/>
+      <MEM_INPUT port="Output02" access="readwrite"/>
+      <MEM_INPUT port="Output12" access="readwrite"/>
+
+      <MEM_INPUT port="Input03" access="readonly"/>
+      <MEM_INPUT port="Output03" access="readwrite"/>
+      <MEM_INPUT port="Output13" access="readwrite"/>
 
       <AVALON_MEM port="avmm_1_rw" width="256" burstwidth="5" optype="read"
 buffer_location="HBM0" />
       <AVALON_MEM port="avmm_2_rw" width="256" burstwidth="5" optype="write"
 buffer_location="HBM1" />
+      <AVALON_MEM port="avmm_3_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM2" />
+      <AVALON_MEM port="avmm_4_rw" width="256" burstwidth="5" optype="read"
+buffer_location="HBM3" />
+      <AVALON_MEM port="avmm_5_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM4" />
+      <AVALON_MEM port="avmm_6_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM5" />
+      <AVALON_MEM port="avmm_7_rw" width="256" burstwidth="5" optype="read"
+buffer_location="HBM6" />
+      <AVALON_MEM port="avmm_8_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM7" />
+      <AVALON_MEM port="avmm_9_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM8" />
+      <AVALON_MEM port="avmm_10_rw" width="256" burstwidth="5" optype="read"
+buffer_location="HBM9" />
+      <AVALON_MEM port="avmm_11_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM10" />
+      <AVALON_MEM port="avmm_12_rw" width="256" burstwidth="5" optype="write"
+buffer_location="HBM11" />
+
 
     </INTERFACE>
     <C_MODEL>

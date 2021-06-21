@@ -123,6 +123,32 @@ sobel-fpga:	$(SOURCE_FILES)
 		@echo "---------------- UZ - TUD ---------------------"
 		@echo "-----------------------------------------------" 
 
+###########################################################################
+#whitout modelsim simulation
+.PHONY:sobel-tiling-fpga
+sobel-tiling-fpga:	CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) $(INC) -march=$(FPGA_FAMILY) --simulator none -v -o HiFlipVX_Intel
+sobel-tiling-fpga:	SOURCE_FILES := $(SOURCE_FILES) ./graph_test/sobel_tiling.cpp
+sobel-tiling-fpga:	$(SOURCE_FILES)
+		$(CXX) $(SOURCE_FILES) $(CXXFLAGS) 
+		@echo "-----------------------------------------------" 
+		@echo "------------COMPILING HIFLIPVX-----------------"
+		@echo "--------------for Intel FPGAS -----------------"
+		@echo "-------------- SOBEL TILING  ------------------"
+		@echo "---------------- UZ - TUD ---------------------"
+		@echo "-----------------------------------------------" 
+
+.PHONY:sobel-tiling4-fpga
+sobel-tiling4-fpga:	CXXFLAGS := $(CXXFLAGS) -D $(MANUFACTURER) $(INC) -march=$(FPGA_FAMILY) --simulator none -v -o HiFlipVX_Intel
+sobel-tiling4-fpga:	SOURCE_FILES := $(SOURCE_FILES) ./graph_test/sobel_tiling4.cpp
+sobel-tiling4-fpga:	$(SOURCE_FILES)
+		$(CXX) $(SOURCE_FILES) $(CXXFLAGS) 
+		@echo "-----------------------------------------------" 
+		@echo "------------COMPILING HIFLIPVX-----------------"
+		@echo "--------------for Intel FPGAS -----------------"
+		@echo "-------------- SOBEL TILING  ------------------"
+		@echo "--------------  4 TILES ---- ------------------"
+		@echo "---------------- UZ - TUD ---------------------"
+		@echo "-----------------------------------------------" 
 
 ###########################################################################
 ###########################################################################
