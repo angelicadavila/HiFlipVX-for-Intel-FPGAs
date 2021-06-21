@@ -14,9 +14,8 @@
 /*******************************************************************************/
 extern "C" template component 
 void ImgSobelFunc<vx_uint8, vx_int8, VEC_NUM, COLS_FHD,ROWS_FHD, FILTER_SIZE, SOBEL_BORDER>(
-	DramTypeIn00 &Input00, DramTypeOut00 &Output00, DramTypeOut10 &Output10, 
-	DramTypeIn01 &Input01, DramTypeOut01 &Output01, DramTypeOut11 &Output11, 
-const uint rows
+	DramTypeIn00 & __restrict Input00, DramTypeOut00 &Output00, DramTypeOut10 &Output10, 
+	DramTypeIn01 &Input01, DramTypeOut01 &Output01, DramTypeOut11 &Output11 
 ); 
 /*******************************************************************************/
 /*******************************************************************************/

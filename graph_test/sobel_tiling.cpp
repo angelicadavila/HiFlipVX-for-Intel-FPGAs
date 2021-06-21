@@ -62,7 +62,7 @@ int main(){
 	}
 
 	//calling the component
-	ImgSobelFunc<filter_u_type, filter_s_type, VEC_NUM , COLS_FHD , ROWS_FHD , FILTER_SIZE , SOBEL_BORDER>(mm_in, mm_out, mm_out1, mm_in01, mm_out01, mm_out11,ROWS_FHD);
+	ImgSobelFunc<filter_u_type, filter_s_type, VEC_NUM , COLS_FHD , ROWS_FHD , FILTER_SIZE , SOBEL_BORDER>(mm_in, mm_out, mm_out1, mm_in01, mm_out01, mm_out11);
 
 	unsigned int* out_img = (unsigned int*) malloc(rows * cols * sizeof(unsigned int));
 	vx_image<filter_s_type,VEC_NUM> data_out;

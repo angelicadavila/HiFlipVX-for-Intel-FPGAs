@@ -48,17 +48,17 @@ struct vxSobel
 	vxSobel(DramTypeIn &InputImg, DramTypeOut0 &OutputImg, DramTypeOut1 &OutputImg1){
 
 		vxDramRead <SrcType, decltype(stream_r_0), stream_r_0, DramTypeIn, VEC_NUM, 
-		WIDTH, HEIGHT,8> vxCopyDRAM_In0 (HEIGHT/TILES, &InputImg);
+		WIDTH, HEIGHT,8> vxCopyDRAM_In0 (HEIGHT, &InputImg);
 		//Sobel Filter
 		ImgSobel <SrcType, DstType,VEC_NUM, WIDTH, HEIGHT, KERN_SIZE, BORDER_TYPE, 
 		decltype(stream_r_0), decltype(streamX_1_2), decltype(streamY_1_2),
 		stream_r_0, streamX_1_2, streamY_1_2> vxSobelNode1;
 
 		vxDramWrite <DstType, decltype(streamX_1_2), streamX_1_2, DramTypeOut0, 
-		VEC_NUM, WIDTH, HEIGHT,32> vxCopyDRAM_Out0 (&OutputImg);
+		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out0 (&OutputImg);
 
 		vxDramWrite <DstType, decltype(streamY_1_2), streamY_1_2, DramTypeOut1, 
-		VEC_NUM, WIDTH, HEIGHT,32> vxCopyDRAM_Out1 (&OutputImg1);
+		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out1 (&OutputImg1);
 	
 //	vxSobelNode1.vxReleaseNode();
 //	vxCopyDRAM_In0.vxReleaseNode();
@@ -71,9 +71,8 @@ struct vxSobel
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
 	vx_uint16 HEIGHT, vx_uint8 KERN_SIZE, vx_border_e BORDER_TYPE	>
 void ImgSobelFunc( 
-	DramTypeIn00 &Input00, DramTypeOut00 &Output00, DramTypeOut10 &Output10, 
-	DramTypeIn01 &Input01, DramTypeOut01 &Output01, DramTypeOut11 &Output11, 
-	const uint rows	
+	DramTypeIn00 & __restrict Input00, DramTypeOut00 &Output00, DramTypeOut10 &Output10, 
+	DramTypeIn01 &Input01, DramTypeOut01 &Output01, DramTypeOut11 &Output11 
 )
 {
 	// Tiling the number of rows in image processing
