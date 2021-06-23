@@ -123,6 +123,11 @@ void ImgSobelFunc(
 			stream_r_0_3, streamX_1_2_3, streamY_1_2_3 >
 			vxSobelTile3(Input03, Output03, Output13);
 	#endif
+
+	vxSobleTile0.vxReleaseNode();
+	vxSobleTile1.vxReleaseNode();
+	vxSobleTile2.vxReleaseNode();
+	vxSobleTile3.vxReleaseNode();
 }
 
 
