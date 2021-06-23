@@ -46,36 +46,45 @@ vx_image_uint8 stream_r_0_0,stream_r_0_1 ,stream_r_0_2 ,stream_r_0_3;
 vx_image_int8 streamX_1_2_0,streamX_1_2_1,streamX_1_2_2,streamX_1_2_3;            
 vx_image_int8 streamY_1_2_0,streamY_1_2_1,streamY_1_2_2,streamY_1_2_3;            
 
+
+
 //Sobell object for multiple instances of the filter in tiling mode
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
 	vx_uint16 HEIGHT, vx_uint8 KERN_SIZE, vx_border_e BORDER_TYPE, typename DramTypeIn,
 	typename DramTypeOut0, typename DramTypeOut1,//Memory inpur ports
 	vx_image_uint8 &stream_r_0, vx_image_int8 &streamX_1_2, vx_image_int8 &streamY_1_2
 >
-struct vxSobel
+class vxSobel
 {
+	private:
+	 vxDramRead<SrcType, decltype(stream_r_0), stream_r_0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_In0;	
+	 vxDramWrite <DstType, decltype(streamX_1_2), streamX_1_2, DramTypeOut0, 
+		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out0;
+     vxDramWrite <DstType, decltype(streamY_1_2), streamY_1_2, DramTypeOut1, 
+		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out1;
+
+	public:
 	vxSobel(DramTypeIn &InputImg, DramTypeOut0 &OutputImg, DramTypeOut1 &OutputImg1){
 
-		vxDramRead <SrcType, decltype(stream_r_0), stream_r_0, DramTypeIn, VEC_NUM, 
-		WIDTH, HEIGHT,8> vxCopyDRAM_In0 (HEIGHT, &InputImg);
+		vxCopyDRAM_In0(HEIGHT, &InputImg);
 		//Sobel Filter
 		ImgSobel <SrcType, DstType,VEC_NUM, WIDTH, HEIGHT, KERN_SIZE, BORDER_TYPE, 
 		decltype(stream_r_0), decltype(streamX_1_2), decltype(streamY_1_2),
 		stream_r_0, streamX_1_2, streamY_1_2> vxSobelNode1;
 
-		vxDramWrite <DstType, decltype(streamX_1_2), streamX_1_2, DramTypeOut0, 
-		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out0 (&OutputImg);
+		vxCopyDRAM_Out0 (&OutputImg);
+		vxCopyDRAM_Out1 (&OutputImg1);
+	}
 
-		vxDramWrite <DstType, decltype(streamY_1_2), streamY_1_2, DramTypeOut1, 
-		VEC_NUM, WIDTH, HEIGHT,8> vxCopyDRAM_Out1 (&OutputImg1);
-	
-//	vxSobelNode1.vxReleaseNode();
-//	vxCopyDRAM_In0.vxReleaseNode();
-//	vxCopyDRAM_Out0.vxReleaseNode();
-//	vxCopyDRAM_Out1.vxReleaseNode();
-
+	void vxReleaseNode(){
+		//vxSobelNode1.vxReleaseNode();
+		vxCopyDRAM_In0.vxReleaseNode();
+		vxCopyDRAM_Out0.vxReleaseNode();
+		vxCopyDRAM_Out1.vxReleaseNode();
 	}
 };
+
+
 // varname_InputNumber_Tile
 template <typename SrcType, typename DstType, vx_uint8 VEC_NUM, vx_uint16 WIDTH, 
 	vx_uint16 HEIGHT, vx_uint8 KERN_SIZE, vx_border_e BORDER_TYPE	>

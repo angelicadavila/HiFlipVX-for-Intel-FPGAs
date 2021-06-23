@@ -26,7 +26,7 @@ void vxReadDram(const uint rows, DramTypeIn *dram_in){
 			auto aux_dram=&(*dram_in[0]);
 			using burst_coalesced =ihc::lsu<ihc::style<ihc::BURST_COALESCED>>;
 			#pragma ii 1
-			for (auto i = 0; i < WIDTH * rows/(VEC_NUM*COALESCED); i++){
+			for (auto i = 0; i < WIDTH * HEIGHT/(VEC_NUM*COALESCED); i++){
 		//	First version		
 				UNROLL_INTEL()
 				for (vx_uint8 j = 0; j < COALESCED; ++j) 
@@ -81,7 +81,9 @@ template<typename DstType, typename StreamType, StreamType &stream_in,typename
 DramTypeOut, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED= 8, 
 enable_if_t<!std::is_same<DstType, vx_uint32>::value,int> = 0 >
 void vxWriteDram(DramTypeOut *dram_out){
+
 		vx_image<DstType, VEC_NUM> data[COALESCED];
+		auto aux_dram=&(*dram_out[0]);
 
 	for (vx_uint32 i = 0; i < WIDTH * HEIGHT/(VEC_NUM*COALESCED); i++){
 
@@ -90,7 +92,8 @@ void vxWriteDram(DramTypeOut *dram_out){
    
 		UNROLL_INTEL()
 		for (vx_uint8 j = 0; j < COALESCED; ++j) 
-	    	(*dram_out)[i*COALESCED+j] = data[j];	
+//	    	(*dram_out)[i*COALESCED+j] = data[j];	
+	    	burst_coalesced::store(&aux_dram[i*COALESCED+j],data[j]);	
 	  //  	(*dram_out)[i*COALESCED+j] = stream_in.read();	
 		
 	} 
@@ -187,12 +190,20 @@ void SplitStream(){
 template<typename SrcType, typename StreamType, StreamType &input0, typename DramTypeIn, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED>
 struct vxDramRead
 {
+	//default constructor
+	vxDramRead(){}
+
     vxDramRead(const uint rows, DramTypeIn *dram_in){
 	//ihc::launch((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT, COALESCED>)); 
 	ihc::launch((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT, COALESCED>), rows,dram_in); 
 	}
+
+    void operator () (const uint rows, DramTypeIn *dram_in){
+	ihc::launch((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT, COALESCED>), rows,dram_in); 
+	}
+
     void vxReleaseNode(){
-//	ihc::collect((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT,COALESCED>)); 
+	ihc::collect((vxReadDram<SrcType, decltype(input0), input0, DramTypeIn, VEC_NUM, WIDTH, HEIGHT,COALESCED>)); 
 	}
 };
 
@@ -201,8 +212,14 @@ DramTypeOut, vx_uint8 VEC_NUM, vx_uint16 WIDTH, vx_uint16 HEIGHT, uint COALESCED
 = 1>
 struct vxDramWrite
 {
+    vxDramWrite(){
+	}
    /*  @see vxWriteDram(DramTypeOut *dram_out)*/
     vxDramWrite(DramTypeOut *dram_in){
+	ihc::launch((vxWriteDram<SrcType, decltype(input0), input0, DramTypeOut, VEC_NUM, WIDTH, HEIGHT, COALESCED>), dram_in); 
+	}
+
+    void operator ()(DramTypeOut *dram_in){
 	ihc::launch((vxWriteDram<SrcType, decltype(input0), input0, DramTypeOut, VEC_NUM, WIDTH, HEIGHT, COALESCED>), dram_in); 
 	}
     void vxReleaseNode(){
