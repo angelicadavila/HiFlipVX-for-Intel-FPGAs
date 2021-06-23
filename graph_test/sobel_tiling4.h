@@ -124,10 +124,10 @@ void ImgSobelFunc(
 			vxSobelTile3(Input03, Output03, Output13);
 	#endif
 
-	vxSobleTile0.vxReleaseNode();
-	vxSobleTile1.vxReleaseNode();
-	vxSobleTile2.vxReleaseNode();
-	vxSobleTile3.vxReleaseNode();
+	vxSobelTile0.vxReleaseNode();
+	vxSobelTile1.vxReleaseNode();
+	vxSobelTile2.vxReleaseNode();
+	vxSobelTile3.vxReleaseNode();
 }
 
 
